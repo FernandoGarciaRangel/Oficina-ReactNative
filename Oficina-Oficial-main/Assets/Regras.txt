@@ -1,0 +1,172 @@
+Representação Hierárquica
++---"usuarios"
+|   +---$uid
+|   |   +---"uid"
+|   |   +---"email"
+|   |   +---"funcao" (ADMIN, CLIENTE ou MECANICO)
+|
++---"clientes"
+|   +---$uid
+|   |   +---"cpf"
+|   |   +---"telefone"
+|   |   +---"nome"
+|
++---"mecanicos"
+|   +---$uid
+|   |   +---"matricula"
+|   |   +---"nome"
+|
++---"veiculos"
+|   +---$placa
+|   |   +---"placa"
+|   |   +---"modelo"
+|   |   +---"marca"
+|   |   +---"idCliente"
+|
++---"oss" (Ordens de Serviço)
+|   +---$osId
+|   |   +---"preco"
+|   |   +---"dataInicio"
+|   |   +---"dataFim" (implícito nas regras de indexação)
+|   |   +---"descricao"
+|   |   +---"idVeiculo"
+|   |   +---"idMecanico"
+|   |   +---"itens"
+|   |   |   +---$itemId
+|   |   |   |   +---"precoProd"
+|   |   |   |   +---"quantidade"
+|   |   |   |   +---"precoPraticado"
+|   |   |   |   +---"idProduto"
+|
++---"produtos"
+    +---$codigo
+        +---"codigo"
+        +---"quantidade"
+        +---"nome"
+        +---"precoAtual"
+
+{
+  "rules": {
+    /***** REGRAS GERAIS *****/
+    /*---- Leitura: dono do projeto no Firebase e usuários com função ADMIN ----*/
+    ".read": "auth.token.isAdmin == true || root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN'",
+    /*---- Escrita: dono do projeto no Firebase ----*/
+    ".write": "auth.token.isAdmin == true",
+
+    /***** USUÁRIOS *****/
+    "usuarios": {
+      /*---- Indexação: 'email' para cada filho de usuários ----*/
+      ".indexOn": ["email"],
+      /*---- Escrita em todos filhos de usuários: usuários com função ADMIN ----*/
+      ".write": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN'",
+      /*---- Para cada filho de usuários ----*/
+      "$uid": {
+        /*---- Validação: deverá ter as entradas uid, email e funcao ----*/
+        ".validate": "newData.hasChildren(['uid','email','funcao'])",
+        /*---- Leitura: Se a entrada corresponder ao auth.uid ----*/
+        ".read": "$uid === auth.uid",
+        /*---- Escrita: Se a entrada corresponder ao auth.uid e o valor da entrada funcao for CLIENTE ou MECANICO ----*/
+        ".write": "$uid === auth.uid && (newData.child('funcao').val() == 'CLIENTE' || newData.child('funcao').val() == 'MECANICO')"
+      }
+    },
+
+    /***** CLIENTES *****/
+    "clientes": {
+      /*---- Indexação: 'cpf' e 'nome' para cada filho de clientes ----*/
+      ".indexOn": ["cpf", "nome"],
+      /*---- Leitura em todos os filhos de clientes: usuários com função ADMIN ou MECANICO ----*/
+      ".read": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN' || root.child('usuarios').child(auth.uid).child('funcao').val() === 'MECANICO'",
+      /*---- Escrita em todos filhos de clientes: usuários com função ADMIN ----*/
+      ".write": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN'",
+      /*---- Para cada filho de clientes ----*/
+      "$uid": {
+        /*---- Validação: deverá ter as entradas cpf, telefone e nome ----*/
+        ".validate": "newData.hasChildren(['cpf','telefone','nome'])",
+        /*---- Leitura: Se a entrada corresponder ao auth.uid ou usuário for MECANICO ----*/
+        ".read": "$uid === auth.uid || root.child('usuarios').child(auth.uid).child('funcao').val() === 'MECANICO'",
+        /*---- Escrita: Se a entrada corresponder ao auth.uid e for um CLIENTE cadastrado ----*/
+        ".write": "$uid === auth.uid && root.child('usuarios').child(auth.uid).child('funcao').val() === 'CLIENTE'"
+      }
+    },
+
+    /***** MECANICOS *****/
+    "mecanicos": {
+      /*---- Indexação: 'matricula' e 'nome' para cada filho de mecanicos ----*/
+      ".indexOn": ["matricula", "nome"],
+      /*---- Leitura em todos os filhos de mecanicos: usuários cadastrados ----*/
+      ".read": "root.child('usuarios').child(auth.uid).exists()",
+      /*---- Escrita em todos filhos de mecanicos: usuários com função ADMIN ----*/
+      ".write": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN'",
+      /*---- Para cada filho de mecanicos ----*/
+      "$uid": {
+        /*---- Validação: deverá ter as entradas matricula e nome ----*/
+        ".validate": "newData.hasChildren(['matricula','nome'])",
+        /*---- Leitura: Se a entrada corresponder ao auth.uid ----*/
+        ".read": "$uid === auth.uid",
+        /*---- Escrita: Se a entrada corresponder ao auth.uid e for um MECANICO cadastrado ----*/
+        ".write": "$uid === auth.uid && root.child('usuarios').child(auth.uid).child('funcao').val() === 'MECANICO'"
+      }
+    },
+
+    /***** VEICULOS *****/
+    "veiculos": {
+      /*---- Indexação: 'placa' e 'modelo' para cada filho de veiculos ----*/
+      ".indexOn": ["placa", "modelo", "marca"],
+      /*---- Leitura em todos os filhos de veiculos: usuários com função ADMIN ou MECANICO ----*/
+      ".read": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN' || root.child('usuarios').child(auth.uid).child('funcao').val() === 'MECANICO'",
+      /*---- Escrita em todos filhos de veiculos: usuários com função ADMIN ----*/
+      ".write": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN'",
+      /*---- Para cada filho de veiculos ----*/
+      "$placa": {
+        /*---- Validação: deverá ter as entradas placa, modelo, marca e idCliente ----*/
+        ".validate": "newData.hasChildren(['placa','modelo','marca','idCliente']) && newData.child('placa').val() === $placa",
+        /*---- Leitura: Se o veículo pertencer ao cliente autenticado ----*/
+        ".read": "root.child('clientes').child(auth.uid).exists() && data.child('idCliente').val() === auth.uid",
+        /*---- Escrita: Se for um CLIENTE e o veículo pertencer a ele ----*/
+        ".write": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'CLIENTE' && newData.child('idCliente').val() === auth.uid"
+      }
+    },
+
+    /***** ORDENS DE SERVIÇO (OS) *****/
+    "oss": {
+      /*---- Indexação: 'dataInicio', 'dataFim' e 'idVeiculo' para cada filho de os ----*/
+      ".indexOn": ["dataInicio", "dataFim", "idVeiculo", "idMecanico"],
+      /*---- Leitura em todos os filhos de os: usuários com função ADMIN ----*/
+      ".read": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN'",
+      /*---- Escrita em todos filhos de os: usuários com função ADMIN ----*/
+      ".write": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN'",
+      /*---- Para cada OS ----*/
+      "$osId": {
+        /*---- Validação: deverá ter as entradas preco, dataInicio, descricao, idVeiculo e idMecanico ----*/
+        ".validate": "newData.hasChildren(['preco','dataInicio','descricao','idVeiculo','idMecanico'])",
+        /*---- Leitura: Se for MECANICO atrelado à OS ou CLIENTE dono do veículo ----*/
+        ".read": "(root.child('usuarios').child(auth.uid).child('funcao').val() === 'MECANICO' && data.child('idMecanico').val() === auth.uid) || (root.child('usuarios').child(auth.uid).child('funcao').val() === 'CLIENTE' && root.child('veiculos').child(data.child('idVeiculo').val()).child('idCliente').val() === auth.uid)",
+        /*---- Escrita: Se for MECANICO e for atrelado à OS ----*/
+        ".write": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'MECANICO' && newData.child('idMecanico').val() === auth.uid",
+        
+        /***** ITENS DA OS *****/
+        "itens": {
+          "$itemId": {
+            /*---- Validação: deverá ter precoProd, quantidade e precoPraticado ----*/
+            ".validate": "newData.hasChildren(['precoProd','quantidade','precoPraticado','idProduto'])"
+        }
+      }
+    },
+
+    /***** PRODUTOS *****/
+//Apenas manter o validate aqui!!!
+    "produtos": {
+      /*---- Indexação: 'codigo' e 'nome' para cada filho de produtos ----*/
+      ".indexOn": ["codigo", "nome"],
+      /*---- Leitura em todos os filhos de produtos: qualquer usuário autenticado ----*/
+      ".read": "auth != null",
+      /*---- Escrita em todos filhos de produtos: usuários com função ADMIN ----*/
+      ".write": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN'",
+      /*---- Para cada produto ----*/
+      "$codigo": {
+        /*---- Validação: deverá ter as entradas codigo, quantidade, nome e precoAtual ----*/
+        ".validate": "newData.hasChildren(['codigo','quantidade','nome','precoAtual']) && newData.child('codigo').val() === $codigo",
+      }
+    }
+  }
+}

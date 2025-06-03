@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manter Produto</title>
+    <link rel="stylesheet" href="manterProduto.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Manter Produto</h1>
+        <div class="acoes-superiores">
+            <button class="botao botao-adicionar" onclick="abrirModalProduto()">
+                <i class="fas fa-plus"></i> Novo Produto
+            </button>
+        </div>
+        <div class="tabela-produtos-wrapper">
+            <table class="tabela-produtos">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nome</th>
+                        <th>Quantidade</th>
+                        <th>Preço</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="produtos-tbody">
+                    <!-- Produtos serão inseridos aqui -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para adicionar/editar produto -->
+    <div class="modal" id="modalProduto">
+        <div class="modal-conteudo">
+            <h2 class="modal-titulo">Adicionar Produto</h2>
+            <form class="formulario" id="formProduto">
+                <input type="hidden" id="produtoId" name="produtoId">
+                <div class="campo-formulario">
+                    <label for="codigo">Código:</label>
+                    <input type="text" id="codigo" name="codigo" required>
+                </div>
+                <div class="campo-formulario">
+                    <label for="nome">Nome:</label>
+                    <input type="text" id="nome" name="nome" required>
+                </div>
+                <div class="campo-formulario">
+                    <label for="quantidade">Quantidade:</label>
+                    <input type="number" id="quantidade" name="quantidade" min="0" required>
+                </div>
+                <div class="campo-formulario">
+                    <label for="preco">Preço:</label>
+                    <input type="number" id="preco" name="preco" min="0" step="0.01" required>
+                </div>
+                <div class="botoes">
+                    <button type="submit" class="botao botao-salvar">
+                        <i class="fas fa-save"></i> Salvar
+                    </button>
+                    <button type="button" class="botao botao-cancelar" onclick="fecharModalProduto()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Script de produtos -->
+    <script src="manterProduto.js"></script>
+</body>
+</html>

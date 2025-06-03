@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manter Ordens de Serviço</title>
+    <link rel="stylesheet" href="manterOs.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="titulo">Manter Ordens de Serviço</h1>
+        </header>
+
+        <main>
+            <div class="acoes-superiores">
+                <button class="botao-adicionar" onclick="abrirModal()">
+                    <i class="fas fa-plus"></i> Adicionar Nova OS
+                </button>
+            </div>
+
+            <div class="tabela-container">
+                <table class="tabela">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Mecânico</th>
+                            <th>Data</th>
+                            <th>Status</th>
+                            <th>Descrição</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-id="1">
+                            <td>1</td>
+                            <td>João da Silva</td>
+                            <td>José Oliveira</td>
+                            <td>2023-01-01</td>
+                            <td><span class="status status-andamento">Em andamento</span></td>
+                            <td>
+                                <div class="descricao-preview" data-descricao="Troca de óleo e filtros, alinhamento e balanceamento, verificação de freios e suspensão, teste de bateria e alternador, diagnóstico de motor e transmissão." onclick="visualizarDescricao(1)">
+                                    Troca de óleo e filtros, alinhamento e balanceamento...
+                                </div>
+                            </td>
+                            <td class="acoes">
+                                <button class="botao-acao botao-editar" onclick="editarOs(1)">
+                                    <i class="fas fa-edit"></i> Editar
+                                </button>
+                                <button class="botao-acao botao-excluir" onclick="excluirOs(1)">
+                                    <i class="fas fa-trash"></i> Excluir
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para adicionar/editar OS -->
+    <div class="modal" id="modalOs">
+        <div class="modal-conteudo">
+            <h2 class="modal-titulo">Adicionar Ordem de Serviço</h2>
+            <form class="formulario" id="formOs">
+                <input type="hidden" id="osId">
+                
+                <div class="campo-formulario">
+                    <label for="cliente">Cliente:</label>
+                    <input type="text" id="cliente" name="cliente" required>
+                </div>
+                
+                <div class="campo-formulario">
+                    <label for="mecanico">Mecânico:</label>
+                    <input type="text" id="mecanico" name="mecanico" required>
+                </div>
+                
+                <div class="campo-formulario">
+                    <label for="data">Data:</label>
+                    <input type="date" id="data" name="data" required>
+                </div>
+                
+                <div class="campo-formulario">
+                    <label for="status">Status:</label>
+                    <select id="status" name="status" required>
+                        <option value="pendente">Pendente</option>
+                        <option value="andamento">Em andamento</option>
+                        <option value="concluida">Concluída</option>
+                        <option value="cancelada">Cancelada</option>
+                    </select>
+                </div>
+                
+                <div class="campo-formulario">
+                    <label for="descricao">Descrição do Serviço:</label>
+                    <textarea id="descricao" name="descricao" rows="4" required></textarea>
+                </div>
+                
+                <div class="botoes">
+                    <button type="submit" class="botao-salvar">
+                        <i class="fas fa-save"></i> Salvar
+                    </button>
+                    <button type="button" class="botao-cancelar" onclick="fecharModal()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para visualizar descrição -->
+    <div class="modal" id="modalDescricao">
+        <div class="modal-conteudo modal-descricao">
+            <h2 class="modal-titulo">Descrição do Serviço</h2>
+            <div class="descricao-conteudo">
+                <p id="descricaoCompleta"></p>
+            </div>
+            <div class="botoes">
+                <button type="button" class="botao-editar" onclick="editarDescricao()">
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+                <button type="button" class="botao-cancelar" onclick="fecharModalDescricao()">
+                    <i class="fas fa-times"></i> Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="manterOs.js"></script>
+</body>
+</html>

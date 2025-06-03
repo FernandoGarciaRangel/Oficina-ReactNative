@@ -1,0 +1,237 @@
+/* Reset e estilos base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    background: linear-gradient(135deg, #436633 0%, #274d3d 100%);
+    color: white;
+    padding: 1.5rem 0;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.titulo {
+    font-size: 2.2rem;
+    text-align: center;
+    font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.13);
+}
+
+/* Tabela de OS */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+th {
+    background-color: #436633;
+    color: #fff;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover {
+    background-color: #eaf3e3;
+    transition: background-color 0.3s ease;
+}
+
+/* Botões */
+.btn, .btn-alterar {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-right: 8px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn {
+    background: linear-gradient(135deg, #436633 0%, #274d3d 100%);
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(67,102,51,0.07);
+}
+
+.btn:hover {
+    background: linear-gradient(135deg, #274d3d 0%, #436633 100%);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(67,102,51,0.13);
+}
+
+.btn-alterar {
+    background-color: #436633;
+    color: #fff;
+    font-weight: 600;
+}
+
+.btn-alterar:hover {
+    background: linear-gradient(135deg, #4b1e00 0%, #436633 100%);
+    color: #fff;
+    transform: translateY(-1px) scale(1.04);
+    box-shadow: 0 2px 8px rgba(67,102,51,0.13);
+}
+
+/* Modal de Encerramento de OS */
+.modal-encerrar {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.6);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.modal-encerrar.ativo {
+    display: flex;
+    opacity: 1;
+}
+.modal-conteudo {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(67,102,51,0.13);
+    padding: 2.5rem 2rem 2rem 2rem;
+    max-width: 400px;
+    width: 95%;
+    position: relative;
+    animation: fadeInModal 0.4s;
+}
+@keyframes fadeInModal {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.fechar-modal {
+    position: absolute;
+    right: 18px;
+    top: 12px;
+    font-size: 2rem;
+    color: #436633;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.fechar-modal:hover {
+    color: #f44336;
+    background: rgba(244,67,54,0.08);
+    transform: rotate(90deg);
+}
+.modal-conteudo h3 {
+    color: #436633;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+}
+.form-group {
+    margin-bottom: 1.3rem;
+    display: flex;
+    flex-direction: column;
+}
+.form-group label {
+    color: #436633;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    font-size: 1.05rem;
+}
+.form-group input[type="date"],
+.form-group textarea {
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 7px;
+    font-size: 1rem;
+    background: #f8f9fa;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+.form-group input[type="date"]:focus,
+.form-group textarea:focus {
+    border-color: #436633;
+    outline: none;
+    background: #fff;
+    box-shadow: 0 0 0 2px rgba(67,102,51,0.1);
+}
+.form-group textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+@media (max-width: 900px) {
+    .container {
+        padding: 10px;
+    }
+    table {
+        font-size: 0.95rem;
+    }
+    th, td {
+        padding: 10px;
+    }
+}
+@media (max-width: 600px) {
+    .container {
+        padding: 4px;
+    }
+    .titulo {
+        font-size: 1.3rem;
+    }
+    table {
+        font-size: 0.9rem;
+    }
+    th, td {
+        padding: 7px 4px;
+    }
+    .modal-conteudo {
+        padding: 1.2rem 0.5rem 1rem 0.5rem;
+        max-width: 98vw;
+    }
+    .modal-conteudo h3 {
+        font-size: 1.1rem;
+    }
+    .btn, .btn-alterar {
+        font-size: 0.95rem;
+        padding: 8px 6px;
+    }
+}

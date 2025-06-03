@@ -1,0 +1,410 @@
+/* Reset e estilos base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.titulo {
+    color: #1a237e;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2em;
+    font-weight: 600;
+}
+
+/* Ações superiores */
+.acoes-superiores {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.busca {
+    position: relative;
+    width: 300px;
+}
+
+.busca input {
+    width: 100%;
+    padding: 10px 35px 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-size: 1em;
+}
+
+.busca i {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #1a237e;
+}
+
+/* Grid de Clientes */
+.clientes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+/* Card de Cliente */
+.cliente-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cliente-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Avatar e Status */
+.cliente-avatar {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+}
+
+.cliente-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #1a237e;
+}
+
+.status {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    font-weight: 500;
+}
+
+.status-ativo {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+}
+
+.status-inativo {
+    background: linear-gradient(45deg, #f44336, #e53935);
+    color: white;
+}
+
+/* Informações do Cliente */
+.cliente-info {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.cliente-info h3 {
+    color: #1a237e;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+.cliente-detalhe {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 5px 0;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.cliente-detalhe i {
+    color: #1a237e;
+    width: 20px;
+}
+
+/* Seção de Veículos */
+.veiculos-info {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+}
+
+.veiculos-info h4 {
+    color: #1a237e;
+    font-size: 1em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.veiculos-info h4 i {
+    color: #1a237e;
+}
+
+.veiculo-card {
+    background: white;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.veiculo-card:last-child {
+    margin-bottom: 0;
+}
+
+.veiculo-placa {
+    font-weight: bold;
+    color: #1a237e;
+    font-size: 1.1em;
+    margin-bottom: 4px;
+}
+
+.veiculo-detalhe {
+    color: #666;
+    font-size: 0.9em;
+}
+
+/* Ações do Cliente */
+.cliente-acoes {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* Botões */
+.botao {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.botao-adicionar {
+    background: linear-gradient(45deg, #1a237e, #0d47a1);
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.botao-adicionar:hover {
+    background: linear-gradient(45deg, #0d47a1, #1a237e);
+    transform: translateY(-2px);
+}
+
+.botao-acao {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.botao-editar {
+    background: linear-gradient(45deg, #2196F3, #1976D2);
+    color: white;
+}
+
+.botao-excluir {
+    background: linear-gradient(45deg, #f44336, #e53935);
+    color: white;
+}
+
+.botao-acao:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-conteudo {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-titulo {
+    color: #1a237e;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Seção de Veículos no Modal */
+.secao-veiculos {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.secao-veiculos h3 {
+    color: #1a237e;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+
+.veiculo-form {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.veiculo-form .botao-remover {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #f44336;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.veiculo-form .botao-remover:hover {
+    color: #d32f2f;
+}
+
+.botao-adicionar-veiculo {
+    width: 100%;
+    margin-top: 10px;
+    background: linear-gradient(45deg, #1a237e, #0d47a1);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.botao-adicionar-veiculo:hover {
+    background: linear-gradient(45deg, #0d47a1, #1a237e);
+}
+
+/* Formulário */
+.formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.campo-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.campo-formulario label {
+    color: #1a237e;
+    font-weight: 500;
+}
+
+.campo-formulario input,
+.campo-formulario select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+.campo-formulario input:focus,
+.campo-formulario select:focus {
+    outline: none;
+    border-color: #1a237e;
+    box-shadow: 0 0 0 2px rgba(26,35,126,0.1);
+}
+
+.botoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.botao-salvar {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+}
+
+.botao-cancelar {
+    background: linear-gradient(45deg, #f44336, #e53935);
+    color: white;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .acoes-superiores {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .busca {
+        width: 100%;
+    }
+
+    .clientes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cliente-card {
+        margin-bottom: 15px;
+    }
+
+    .modal-conteudo {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .botoes {
+        flex-direction: column;
+    }
+
+    .botao {
+        width: 100%;
+    }
+} 

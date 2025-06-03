@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordens de Serviço</title>
+    <link rel="stylesheet" href="clienteOs.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="titulo">Ordens de Serviço</h1>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <h2 class="subtitulo">Suas Ordens de Serviço</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Número da OS</th>
+                        <th>Data de Abertura</th>
+                        <th>Data de Encerramento</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>123456</td>
+                        <td>2024-01-01</td> 
+                        <td>...</td>
+                        <td>Em andamento</td>
+                        <td>
+                            <button class="btn">Detalhes</button>
+                            <button class="btn-cancelar">Cancelar</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <h2>Solicitar Serviço</h2>
+            <button class="btn" onclick="abrirPopup()">Solicitar Serviço</button>
+
+            <div id="popupServico" class="popup">
+                <div class="popup-conteudo">
+                    <span class="fechar" onclick="fecharPopup()">&times;</span>
+                    <h3>Solicitar Novo Serviço</h3>
+                    <form id="formServico">
+                        <div class="form-group">
+                            <label for="descricao">Descrição do Serviço:</label>
+                            <textarea id="descricao" name="descricao" required></textarea>
+                        </div>
+                        <button type="submit" class="btn">Enviar Solicitação</button>
+                    </form>
+                </div>
+            </div>
+           
+        </div>
+    </main>
+    <div id="toastSucesso" class="toast-sucesso">
+        <span class="icone">✔️</span>
+        Ordem de serviço enviada com sucesso!
+    </div>
+    <script src="clienteOs.js"></script>
+</body>
+</html>

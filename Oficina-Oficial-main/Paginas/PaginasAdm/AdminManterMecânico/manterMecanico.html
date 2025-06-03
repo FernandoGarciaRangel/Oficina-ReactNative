@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="manterMecanico.css">
+    <title>Manter Mecânico</title>
+</head>
+<body>
+    <div class="container">
+        <h1 class="titulo">Gerenciamento de Mecânicos</h1>
+        <div class="acoes-superiores">
+            <button class="botao botao-adicionar" onclick="abrirModal()">
+                <i class="fas fa-plus"></i> Adicionar Novo Mecânico
+            </button>
+        </div>
+
+        <div class="cards-container">
+            <div class="card">
+                <div class="card-header">
+                    <h3>João Silva</h3>
+                    <span class="status status-ativo">Ativo</span>
+                </div>
+                <div class="card-body">
+                    <p class="matricula"><strong>Matrícula:</strong> 001</p>
+                </div>
+                <div class="card-footer">
+                    <button class="botao-acao botao-editar" onclick="alterarSituacao(this)">
+                        <i class="fas fa-edit"></i> Alterar
+                    </button>
+                    <button class="botao-acao botao-excluir" onclick="deletarLinha(this)">
+                        <i class="fas fa-trash"></i> Deletar
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Maria Santos</h3>
+                    <span class="status status-inativo">Inativo</span>
+                </div>
+                <div class="card-body">
+                    <p class="matricula"><strong>Matrícula:</strong> 002</p>
+                </div>
+                <div class="card-footer">
+                    <button class="botao-acao botao-editar" onclick="alterarSituacao(this)">
+                        <i class="fas fa-edit"></i> Alterar
+                    </button>
+                    <button class="botao-acao botao-excluir" onclick="deletarLinha(this)">
+                        <i class="fas fa-trash"></i> Deletar
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Pedro Oliveira</h3>
+                    <span class="status status-ativo">Ativo</span>
+                </div>
+                <div class="card-body">
+                    <p class="matricula"><strong>Matrícula:</strong> 003</p>
+                </div>
+                <div class="card-footer">
+                    <button class="botao-acao botao-editar" onclick="alterarSituacao(this)">
+                        <i class="fas fa-edit"></i> Alterar
+                    </button>
+                    <button class="botao-acao botao-excluir" onclick="deletarLinha(this)">
+                        <i class="fas fa-trash"></i> Deletar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para adicionar/editar mecânico -->
+    <div class="modal" id="modalMecanico" style="display: none;">
+        <div class="modal-conteudo">
+            <h2 class="modal-titulo">Adicionar Mecânico</h2>
+            <form class="formulario">
+                <div class="campo-formulario">
+                    <label for="matricula">Matrícula:</label>
+                    <input type="text" id="matricula" name="matricula" required>
+                </div>
+                <div class="campo-formulario">
+                    <label for="nome">Nome:</label>
+                    <input type="text" id="nome" name="nome" required>
+                </div>
+                <div class="campo-formulario">
+                    <label for="situacao">Situação:</label>
+                    <select id="situacao" name="situacao" required>
+                        <option value="ativo">Ativo</option>
+                        <option value="inativo">Inativo</option>
+                    </select>
+                </div>
+                <div class="botoes">
+                    <button type="submit" class="botao botao-salvar">Salvar</button>
+                    <button type="button" class="botao botao-cancelar" onclick="fecharModal()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Adicionando Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <!-- Script externo -->
+    <script src="manterMecanico.js"></script>
+</body>
+</html>

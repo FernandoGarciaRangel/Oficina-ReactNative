@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta Ordens de Serviço</title>
+    <link rel="stylesheet" href="MecanicoConsultaOs.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="titulo">Suas Ordens de Serviço</h1>
+        </div>
+    </header>
+    <main>
+        <main>
+            <div class="container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Número da OS</th>
+                            <th>Data de Abertura</th>
+                            <th>Data de Encerramento</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>123456</td>
+                            <td>2024-01-01</td> 
+                            <td>...</td>
+                            <td>Em andamento</td>
+                            <td>
+                                <button class="btn">Detalhes</button>
+                                <button class="btn-alterar ">Alterar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </main>
+    <div id="modalEncerrar" class="modal-encerrar">
+        <div class="modal-conteudo">
+            <span class="fechar-modal" onclick="fecharModalEncerrar()">&times;</span>
+            <h3>Encerrar Ordem de Serviço</h3>
+            <form id="formEncerrar">
+                <div class="form-group">
+                    <label for="dataEncerramento">Data de Encerramento:</label>
+                    <input type="date" id="dataEncerramento" name="dataEncerramento" required>
+                </div>
+                <div class="form-group">
+                    <label for="descricaoEncerramento">Descrição do Serviço:</label>
+                    <textarea id="descricaoEncerramento" name="descricaoEncerramento" required placeholder="Descreva o serviço realizado..."></textarea>
+                </div>
+                <button type="submit" class="btn">Encerrar OS</button>
+            </form>
+        </div>
+    </div>
+    <script src="MecanicoConsultaOs.js"></script>
+</body>
+</html>
