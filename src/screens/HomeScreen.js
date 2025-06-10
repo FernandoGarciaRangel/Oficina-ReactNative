@@ -5,6 +5,10 @@ import { useNavigation } from '@react-navigation/native';
 export default function HomeScreen() {
   const navigation = useNavigation();
 
+  const handleLogout = () => {
+    navigation.replace('Login');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -32,6 +36,13 @@ export default function HomeScreen() {
           onPress={() => navigation.navigate('Mechanic')}
         >
           <Text style={styles.buttonText}>Área do Mecânico</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[styles.button, styles.logoutButton]}
+          onPress={handleLogout}
+        >
+          <Text style={styles.buttonText}>Sair</Text>
         </TouchableOpacity>
       </View>
 
@@ -75,6 +86,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
     alignItems: 'center',
+  },
+  logoutButton: {
+    backgroundColor: '#FF3B30',
+    marginTop: 20,
   },
   buttonText: {
     color: 'white',
