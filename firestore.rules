@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Regras para a coleção de mecânicos
+    match /mecanicos/{mechanicId} {
+      // Permitir leitura para todos os usuários autenticados
+      allow read: if request.auth != null;
+      
+      // Permitir escrita apenas para usuários autenticados
+      allow create, update, delete: if request.auth != null;
+      
+      // Validações específicas para criação
+      allow create: if request.auth != null &&
+        // Verificar se todos os campos obrigatórios estão presentes
+        request.resource.data.keys().hasAll(['cpf', 'nome', 'email', 'telefone', 'especialidade', 'status', 'createdAt', 'updatedAt']) &&
+        // Verificar se os campos obrigatórios não estão vazios
+        request.resource.data.cpf is string &&
+        request.resource.data.cpf.size() > 0 &&
+        request.resource.data.nome is string &&
+        request.resource.data.nome.size() > 0 &&
+        request.resource.data.email is string &&
+        request.resource.data.email.size() > 0 &&
+        request.resource.data.telefone is string &&
+        request.resource.data.telefone.size() > 0 &&
+        request.resource.data.especialidade is string &&
+        request.resource.data.especialidade.size() > 0 &&
+        // Verificar se o status é válido
+        request.resource.data.status in ['ativo', 'inativo'] &&
+        // Verificar se os timestamps estão presentes
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.updatedAt is timestamp;
+      
+      // Validações para atualização
+      allow update: if request.auth != null &&
+        // Verificar se todos os campos obrigatórios estão presentes
+        request.resource.data.keys().hasAll(['cpf', 'nome', 'email', 'telefone', 'especialidade', 'status', 'updatedAt']) &&
+        // Verificar se os campos obrigatórios não estão vazios
+        request.resource.data.cpf is string &&
+        request.resource.data.cpf.size() > 0 &&
+        request.resource.data.nome is string &&
+        request.resource.data.nome.size() > 0 &&
+        request.resource.data.email is string &&
+        request.resource.data.email.size() > 0 &&
+        request.resource.data.telefone is string &&
+        request.resource.data.telefone.size() > 0 &&
+        request.resource.data.especialidade is string &&
+        request.resource.data.especialidade.size() > 0 &&
+        // Verificar se o status é válido
+        request.resource.data.status in ['ativo', 'inativo'] &&
+        // Verificar se o timestamp de atualização está presente
+        request.resource.data.updatedAt is timestamp;
+    }
+    
+    // Regras para outras coleções futuras
+    match /{document=**} {
+      // Por padrão, negar acesso a todas as outras coleções
+      allow read, write: if false;
+    }
+  }
+} 

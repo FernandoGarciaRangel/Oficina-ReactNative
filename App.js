@@ -7,6 +7,9 @@ import HomeScreen from './src/screens/HomeScreen';
 import AdminScreen from './src/screens/AdminScreen';
 import ClientScreen from './src/screens/ClientScreen';
 import MechanicScreen from './src/screens/MechanicScreen';
+import ManageMechanicsScreen from './src/screens/ManageMechanicsScreen';
+import AddMechanicScreen from './src/screens/AddMechanicScreen';
+import EditMechanicScreen from './src/screens/EditMechanicScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +42,30 @@ export default function App() {
           name="Mechanic" 
           component={MechanicScreen} 
           options={{ title: 'Área do Mecânico' }}
+        />
+        <Stack.Screen 
+          name="ManageMechanics" 
+          component={ManageMechanicsScreen} 
+          options={{ 
+            title: 'Gerenciar Mecânicos',
+            headerShown: false 
+          }}
+        />
+        <Stack.Screen 
+          name="AddMechanic" 
+          component={AddMechanicScreen} 
+          options={{ 
+            title: 'Adicionar Mecânico',
+            headerShown: false 
+          }}
+        />
+        <Stack.Screen 
+          name="EditMechanic" 
+          component={EditMechanicScreen} 
+          options={{ 
+            title: 'Editar Mecânico',
+            headerShown: false 
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>
