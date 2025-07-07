@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useUser } from '../context/UserContext';
 import StatusCard from '../components/StatusCard';
 import { COLORS } from '../constants/colors';
 import { ICONS } from '../constants/icons';
@@ -8,10 +9,71 @@ import { TEXTS } from '../constants/texts';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
+  const { user, logout } = useUser();
+
+  const handleAdminArea = () => {
+    if (user?.funcao === 'admin') {
+      navigation.navigate('Admin');
+    } else {
+      Alert.alert('Acesso Negado', 'Você não tem permissão para acessar a área administrativa.');
+    }
+  };
+
+  const handleClientArea = () => {
+    if (user?.funcao === 'cliente') {
+      navigation.navigate('Client');
+    } else {
+      Alert.alert('Acesso Negado', 'Você não tem permissão para acessar a área do cliente.');
+    }
+  };
+
+  const handleMechanicArea = () => {
+    if (user?.funcao === 'mecanico') {
+      navigation.navigate('Mechanic');
+    } else {
+      Alert.alert('Acesso Negado', 'Você não tem permissão para acessar a área do mecânico.');
+    }
+  };
 
   const handleLogout = () => {
-    navigation.replace('Login');
+    Alert.alert(
+      'Sair',
+      'Deseja realmente sair?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { 
+          text: 'Sair', 
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await logout();
+              navigation.replace('Login');
+            } catch (error) {
+              console.error('Erro ao fazer logout:', error);
+              Alert.alert('Erro', 'Erro ao fazer logout');
+            }
+          }
+        }
+      ]
+    );
   };
+
+  // Se usuário já tem perfil definido, redirecionar automaticamente
+  React.useEffect(() => {
+    if (user?.funcao) {
+      switch (user.funcao) {
+        case 'admin':
+          navigation.replace('Admin');
+          break;
+        case 'cliente':
+          navigation.replace('Client');
+          break;
+        case 'mecanico':
+          navigation.replace('Mechanic');
+          break;
+      }
+    }
+  }, [user, navigation]);
 
   const getCurrentTime = () => {
     const now = new Date();
@@ -41,6 +103,18 @@ export default function HomeScreen() {
             <Text style={styles.timeText}>{getCurrentTime()}</Text>
             <Text style={styles.dateText}>{getCurrentDate()}</Text>
           </View>
+          {user && (
+            <View style={styles.userInfo}>
+              <Text style={styles.userEmail}>{user.email}</Text>
+              {user.funcao && (
+                <Text style={styles.userRole}>
+                  {user.funcao === 'admin' ? 'Administrador' :
+                   user.funcao === 'cliente' ? 'Cliente' :
+                   user.funcao === 'mecanico' ? 'Mecânico' : 'Usuário'}
+                </Text>
+              )}
+            </View>
+          )}
         </View>
 
         <View style={styles.statsContainer}>
@@ -67,43 +141,79 @@ export default function HomeScreen() {
           />
         </View>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity 
-            style={[styles.button, styles.adminButton]}
-            onPress={() => navigation.navigate('Admin')}
-          >
-            <Text style={styles.buttonIcon}>{ICONS.admin}</Text>
-            <Text style={styles.buttonText}>{TEXTS.areas.admin}</Text>
-            <Text style={styles.buttonDescription}>Gerenciar sistema e usuários</Text>
-          </TouchableOpacity>
+        <View style={styles.content}>
+          {!user?.funcao ? (
+            // Usuário sem perfil - mostrar todas as opções
+            <>
+              <TouchableOpacity 
+                style={[styles.button, styles.adminButton]}
+                onPress={handleAdminArea}
+              >
+                <Text style={styles.buttonIcon}>{ICONS.admin}</Text>
+                <Text style={styles.buttonText}>{TEXTS.areas.admin}</Text>
+                <Text style={styles.buttonDescription}>Gerenciar sistema</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={[styles.button, styles.clientButton]}
-            onPress={() => navigation.navigate('Client')}
-          >
-            <Text style={styles.buttonIcon}>{ICONS.client}</Text>
-            <Text style={styles.buttonText}>{TEXTS.areas.client}</Text>
-            <Text style={styles.buttonDescription}>Agendar e acompanhar serviços</Text>
-          </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.button, styles.clientButton]}
+                onPress={handleClientArea}
+              >
+                <Text style={styles.buttonIcon}>{ICONS.client}</Text>
+                <Text style={styles.buttonText}>{TEXTS.areas.client}</Text>
+                <Text style={styles.buttonDescription}>Área do cliente</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={[styles.button, styles.mechanicButton]}
-            onPress={() => navigation.navigate('Mechanic')}
-          >
-            <Text style={styles.buttonIcon}>{ICONS.mechanic}</Text>
-            <Text style={styles.buttonText}>{TEXTS.areas.mechanic}</Text>
-            <Text style={styles.buttonDescription}>Executar e gerenciar serviços</Text>
-          </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.button, styles.mechanicButton]}
+                onPress={handleMechanicArea}
+              >
+                <Text style={styles.buttonIcon}>{ICONS.mechanic}</Text>
+                <Text style={styles.buttonText}>{TEXTS.areas.mechanic}</Text>
+                <Text style={styles.buttonDescription}>Área do mecânico</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            // Usuário com perfil - mostrar apenas área correspondente
+            <TouchableOpacity 
+              style={[
+                styles.button, 
+                user.funcao === 'admin' ? styles.adminButton :
+                user.funcao === 'cliente' ? styles.clientButton :
+                styles.mechanicButton
+              ]}
+              onPress={
+                user.funcao === 'admin' ? handleAdminArea :
+                user.funcao === 'cliente' ? handleClientArea :
+                handleMechanicArea
+              }
+            >
+              <Text style={styles.buttonIcon}>
+                {user.funcao === 'admin' ? ICONS.admin :
+                 user.funcao === 'cliente' ? ICONS.client :
+                 ICONS.mechanic}
+              </Text>
+              <Text style={styles.buttonText}>
+                {user.funcao === 'admin' ? TEXTS.areas.admin :
+                 user.funcao === 'cliente' ? TEXTS.areas.client :
+                 TEXTS.areas.mechanic}
+              </Text>
+              <Text style={styles.buttonDescription}>
+                {user.funcao === 'admin' ? 'Gerenciar sistema' :
+                 user.funcao === 'cliente' ? 'Área do cliente' :
+                 'Área do mecânico'}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
 
+        {user && (
           <TouchableOpacity 
-            style={[styles.button, styles.logoutButton]}
+            style={styles.logoutButton}
             onPress={handleLogout}
           >
-            <Text style={styles.buttonIcon}>{ICONS.logout}</Text>
-            <Text style={styles.buttonText}>{TEXTS.buttons.logout}</Text>
-            <Text style={styles.buttonDescription}>Encerrar sessão</Text>
+            <Text style={styles.logoutButtonText}>Sair</Text>
           </TouchableOpacity>
-        </View>
+        )}
 
         <View style={styles.infoContainer}>
           <Text style={styles.infoTitle}>Informações do Sistema</Text>
@@ -180,7 +290,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
-  buttonContainer: {
+  content: {
     padding: 20,
   },
   button: {
@@ -221,6 +331,20 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.8)',
     fontSize: 14,
     textAlign: 'center',
+  },
+  userInfo: {
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  userEmail: {
+    fontSize: 14,
+    color: COLORS.textWhite,
+    marginBottom: 5,
+  },
+  userRole: {
+    fontSize: 14,
+    color: COLORS.textWhite,
+    fontWeight: 'bold',
   },
   infoContainer: {
     backgroundColor: COLORS.backgroundCard,
@@ -264,5 +388,10 @@ const styles = StyleSheet.create({
     color: COLORS.textWhite,
     fontSize: 12,
     textAlign: 'center',
+  },
+  logoutButtonText: {
+    color: COLORS.textWhite,
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 }); 

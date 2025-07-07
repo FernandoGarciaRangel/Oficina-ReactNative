@@ -1,0 +1,8 @@
+admin@oficina.com
+SenhaForte
+
+mecanico@oficina.com 
+123456
+
+cliente@oficina.com
+123456

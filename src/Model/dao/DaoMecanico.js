@@ -1,7 +1,7 @@
 "use strict";
 
-import Mecanico from "/model/Mecanico.js";
-import ModelError from "/model/ModelError.js";
+import Mecanico from "../Mecanico.js";
+import ModelError from "../ModelError.js";
 
 export default class DaoMecanico {
   #mecanicos;

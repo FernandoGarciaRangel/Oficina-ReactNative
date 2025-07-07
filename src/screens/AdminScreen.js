@@ -1,38 +1,62 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useUser } from '../context/UserContext';
 
 export default function AdminScreen() {
   const navigation = useNavigation();
+  const { user, logout } = useUser();
+
+  // Verificar se usuário tem permissão de admin
+  React.useEffect(() => {
+    if (user && user.funcao !== 'admin') {
+      Alert.alert('Acesso Negado', 'Você não tem permissão para acessar esta área.');
+      navigation.goBack();
+    }
+  }, [user, navigation]);
 
   const handleManageMechanics = () => {
     navigation.navigate('ManageMechanics');
   };
 
   const handleManageClients = () => {
-    Alert.alert('Gerenciar Clientes', 'Funcionalidade será implementada em breve');
-    // navigation.navigate('ManageClients');
+    navigation.navigate('ManageClients');
   };
 
   const handleManageProducts = () => {
-    Alert.alert('Gerenciar Produtos', 'Funcionalidade será implementada em breve');
-    // navigation.navigate('ManageProducts');
+    navigation.navigate('ManageProducts');
   };
 
   const handleManageOS = () => {
-    Alert.alert('Gerenciar OS', 'Funcionalidade será implementada em breve');
-    // navigation.navigate('ManageOS');
+    navigation.navigate('ManageOS');
   };
 
-  const handleReports = () => {
-    Alert.alert('Relatórios', 'Funcionalidade será implementada em breve');
-    // navigation.navigate('Reports');
+  const handleManagePreOS = () => {
+    navigation.navigate('ManagePreOS');
   };
 
-  const handleSettings = () => {
-    Alert.alert('Configurações', 'Funcionalidade será implementada em breve');
-    // navigation.navigate('Settings');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+      Alert.alert('Erro', 'Erro ao fazer logout');
+      // Mesmo com erro, forçar navegação para login
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+    }
   };
+
+  // Se não é admin, não renderizar
+  if (user?.funcao !== 'admin') {
+    return null;
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -40,6 +64,12 @@ export default function AdminScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>Painel do Administrador</Text>
           <Text style={styles.subtitle}>Gerencie todos os aspectos do sistema</Text>
+          {user && (
+            <View style={styles.userInfo}>
+              <Text style={styles.userEmail}>{user.email}</Text>
+              <Text style={styles.userRole}>Administrador</Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.content}>
@@ -79,31 +109,31 @@ export default function AdminScreen() {
             <Text style={styles.cardStatus}>Disponível</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.card} onPress={handleReports}>
+          <TouchableOpacity style={styles.card} onPress={handleManagePreOS}>
             <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Relatórios</Text>
-              <Text style={styles.cardIcon}>📊</Text>
+              <Text style={styles.cardTitle}>Solicitações de Serviço</Text>
+              <Text style={styles.cardIcon}>📝</Text>
             </View>
-            <Text style={styles.cardDescription}>Acessar relatórios de serviços e faturamento</Text>
-            <Text style={styles.cardStatus}>Em desenvolvimento</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.card} onPress={handleSettings}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Configurações</Text>
-              <Text style={styles.cardIcon}>⚙️</Text>
-            </View>
-            <Text style={styles.cardDescription}>Configurar parâmetros do sistema</Text>
-            <Text style={styles.cardStatus}>Em desenvolvimento</Text>
+            <Text style={styles.cardDescription}>Aprovar e gerenciar solicitações de clientes</Text>
+            <Text style={styles.cardStatus}>Disponível</Text>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.backButtonText}>Voltar</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.backButtonText}>Voltar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.logoutButton}
+            onPress={handleLogout}
+          >
+            <Text style={styles.logoutButtonText}>Sair</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -179,5 +209,34 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  logoutButton: {
+    backgroundColor: '#dc3545',
+    padding: 15,
+    borderRadius: 8,
+    margin: 20,
+    alignItems: 'center',
+  },
+  logoutButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  userInfo: {
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  userEmail: {
+    fontSize: 14,
+    color: '#ccc',
+  },
+  userRole: {
+    fontSize: 14,
+    color: '#ccc',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 }); 

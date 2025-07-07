@@ -1,4 +1,6 @@
-import ModelError from "/model/ModelError.js";
+"use strict";
+
+import ModelError from "./ModelError.js";
 
 class Item {
     constructor(precoPrat, precoProd, quantidade) {

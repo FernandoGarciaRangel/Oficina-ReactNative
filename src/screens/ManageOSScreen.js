@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
-  ScrollView,
   TextInput,
   Alert,
   FlatList,
@@ -13,35 +12,33 @@ import {
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { COLORS } from '../constants/colors';
-import { ICONS } from '../constants/icons';
-import { TEXTS } from '../constants/texts';
-import { mechanicService } from '../services/mechanicService';
+import { osService } from '../services/osService';
 
-export default function ManageMechanicsScreen() {
+export default function ManageOSScreen() {
   const navigation = useNavigation();
-  const [mechanics, setMechanics] = useState([]);
+  const [osList, setOsList] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const [filteredMechanics, setFilteredMechanics] = useState([]);
+  const [filteredOS, setFilteredOS] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
 
-  // Carrega os mecânicos quando a tela é focada
   useFocusEffect(
     React.useCallback(() => {
-      loadMechanics();
+      loadOS();
     }, [])
   );
 
   useEffect(() => {
-    filterMechanics();
-  }, [searchText, mechanics]);
+    filterOS();
+  }, [searchText, osList]);
 
-  const loadMechanics = async () => {
+  const loadOS = async () => {
     try {
       setLoading(true);
-      const mechanicsData = await mechanicService.getAllMechanics();
-      setMechanics(mechanicsData);
+      const osData = await osService.getAllOS();
+      setOsList(osData);
     } catch (error) {
       Alert.alert('Erro', error.message);
     } finally {
@@ -51,37 +48,38 @@ export default function ManageMechanicsScreen() {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await loadMechanics();
+    await loadOS();
     setRefreshing(false);
   };
 
-  const filterMechanics = () => {
+  const filterOS = () => {
     if (searchText.trim() === '') {
-      setFilteredMechanics(mechanics);
+      setFilteredOS(osList);
     } else {
-      const filtered = mechanics.filter(mechanic =>
-        mechanic.nome.toLowerCase().includes(searchText.toLowerCase()) ||
-        mechanic.especialidade.toLowerCase().includes(searchText.toLowerCase()) ||
-        mechanic.cpf.includes(searchText)
+      const filtered = osList.filter(os =>
+        os.descricao.toLowerCase().includes(searchText.toLowerCase())
       );
-      setFilteredMechanics(filtered);
+      setFilteredOS(filtered);
     }
   };
 
-  const handleAddMechanic = () => {
-    navigation.navigate('AddMechanic');
+  const handleAddOS = () => {
+    navigation.navigate('AddOS');
   };
 
-  const handleEditMechanic = (mechanic) => {
-    navigation.navigate('EditMechanic', { mechanic });
+  const handleEditOS = (os) => {
+    navigation.navigate('EditOS', { os });
   };
 
-  const handleDeleteMechanic = async (mechanic) => {
-    setDeletingId(mechanic.uid);
+  const handleDeleteOS = async (os) => {
+    setDeletingId(os.uid);
     try {
-      await mechanicService.deleteMechanic(mechanic.uid);
-      await loadMechanics();
-      Alert.alert('Sucesso', 'Mecânico excluído com sucesso!');
+      await osService.deleteOS(os.uid);
+      await loadOS();
+      setSuccessMessage('OS excluída com sucesso! Redirecionando...');
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 1500);
     } catch (error) {
       Alert.alert('Erro', error.message);
     } finally {
@@ -89,68 +87,61 @@ export default function ManageMechanicsScreen() {
     }
   };
 
-  const toggleStatus = async (mechanic) => {
-    try {
-      const newStatus = mechanic.status === 'ativo' ? 'inativo' : 'ativo';
-      await mechanicService.updateMechanicStatus(mechanic.uid, newStatus);
-      await loadMechanics(); // Recarrega a lista
-    } catch (error) {
-      Alert.alert('Erro', error.message);
-    }
-  };
+  // Filtra OS com solicitação de cancelamento
+  const osCancelamento = osList.filter(os => os.cancelamentoSolicitado);
 
-  const renderMechanicCard = ({ item }) => (
-    <View style={styles.mechanicCard}>
+  const renderCancelamentoCard = (item) => (
+    <View style={[styles.osCard, styles.cancelCard]} key={item.uid}>
       <View style={styles.cardHeader}>
-        <View style={styles.mechanicInfo}>
-          <Text style={styles.mechanicName}>{item.nome}</Text>
-          <Text style={styles.mechanicSpecialty}>{item.especialidade}</Text>
-        </View>
-        <View style={[styles.statusBadge, 
-          item.status === 'ativo' ? styles.statusActive : styles.statusInactive]}>
-          <Text style={styles.statusText}>
-            {item.status === 'ativo' ? 'Ativo' : 'Inativo'}
-          </Text>
-        </View>
+        <Text style={[styles.osDescricao, { color: COLORS.danger }]}>Solicitação de Cancelamento</Text>
+        <Text style={styles.osPreco}>Preço: R$ {Number(item.preco).toFixed(2)}</Text>
       </View>
-
       <View style={styles.cardBody}>
-        <Text style={styles.mechanicDetail}>
-          <Text style={styles.label}>CPF:</Text> {item.cpf}
-        </Text>
-        <Text style={styles.mechanicDetail}>
-          <Text style={styles.label}>Email:</Text> {item.email}
-        </Text>
-        <Text style={styles.mechanicDetail}>
-          <Text style={styles.label}>Telefone:</Text> {item.telefone}
-        </Text>
-        {item.matricula && (
-          <Text style={styles.mechanicDetail}>
-            <Text style={styles.label}>Matrícula:</Text> {item.matricula}
-          </Text>
-        )}
+        <Text style={styles.osDetail}><Text style={styles.label}>Descrição:</Text> {item.descricao}</Text>
+        <Text style={styles.osDetail}><Text style={styles.label}>Início:</Text> {item.dataInicio}</Text>
+        <Text style={styles.osDetail}><Text style={styles.label}>Fim:</Text> {item.dataFim}</Text>
+        <Text style={[styles.cancelStatus, { color: COLORS.danger }]}>Cancelamento solicitado pelo cliente</Text>
       </View>
-
       <View style={styles.cardActions}>
         <TouchableOpacity
           style={[styles.actionButton, styles.editButton]}
-          onPress={() => handleEditMechanic(item)}
+          onPress={() => handleEditOS(item)}
+        >
+          <Text style={styles.actionButtonText}>✏️ Analisar/Editar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.actionButton, styles.deleteButton]}
+          onPress={() => handleDeleteOS(item)}
+          disabled={deletingId === item.uid}
+        >
+          <Text style={styles.actionButtonText}>
+            {deletingId === item.uid ? 'Excluindo...' : '🗑️ Excluir'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  const renderOSCard = ({ item }) => (
+    <View style={styles.osCard}>
+      <View style={styles.cardHeader}>
+        <Text style={styles.osDescricao}>{item.descricao}</Text>
+        <Text style={styles.osPreco}>Preço: R$ {Number(item.preco).toFixed(2)}</Text>
+      </View>
+      <View style={styles.cardBody}>
+        <Text style={styles.osDetail}><Text style={styles.label}>Início:</Text> {item.dataInicio}</Text>
+        <Text style={styles.osDetail}><Text style={styles.label}>Fim:</Text> {item.dataFim}</Text>
+      </View>
+      <View style={styles.cardActions}>
+        <TouchableOpacity
+          style={[styles.actionButton, styles.editButton]}
+          onPress={() => handleEditOS(item)}
         >
           <Text style={styles.actionButtonText}>✏️ Editar</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.actionButton, styles.statusButton]}
-          onPress={() => toggleStatus(item)}
-        >
-          <Text style={styles.actionButtonText}>
-            {item.status === 'ativo' ? '⏸️ Pausar' : '▶️ Ativar'}
-          </Text>
-        </TouchableOpacity>
-
         <TouchableOpacity
           style={[styles.actionButton, styles.deleteButton]}
-          onPress={() => handleDeleteMechanic(item)}
+          onPress={() => handleDeleteOS(item)}
           disabled={deletingId === item.uid}
         >
           <Text style={styles.actionButtonText}>
@@ -163,13 +154,12 @@ export default function ManageMechanicsScreen() {
 
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
-      <Text style={styles.emptyStateIcon}>🔧</Text>
-      <Text style={styles.emptyStateTitle}>Nenhum mecânico encontrado</Text>
+      <Text style={styles.emptyStateIcon}>📋</Text>
+      <Text style={styles.emptyStateTitle}>Nenhuma OS encontrada</Text>
       <Text style={styles.emptyStateText}>
-        {searchText.trim() !== '' 
+        {searchText.trim() !== ''
           ? 'Tente ajustar sua busca'
-          : 'Adicione o primeiro mecânico clicando no botão +'
-        }
+          : 'Adicione a primeira OS clicando no botão +'}
       </Text>
     </View>
   );
@@ -181,27 +171,37 @@ export default function ManageMechanicsScreen() {
           <Text style={styles.backButtonText}>← Voltar</Text>
         </TouchableOpacity>
         <View style={{ flex: 1, alignItems: 'center' }}>
-          <Text style={styles.title}>Gerenciar Mecânicos</Text>
+          <Text style={styles.title}>Gerenciar OS</Text>
           <Text style={styles.subtitle}>
-            {filteredMechanics.length} mecânico(s) encontrado(s)
+            {filteredOS.length} OS(s) encontrada(s)
           </Text>
         </View>
         <View style={{ width: 60 }} />
       </View>
-
+      {successMessage ? (
+        <View style={styles.successContainer}>
+          <Text style={styles.successText}>{successMessage}</Text>
+        </View>
+      ) : null}
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
-          placeholder="Buscar por nome, especialidade ou CPF..."
+          placeholder="Buscar por descrição..."
           value={searchText}
           onChangeText={setSearchText}
         />
       </View>
-
       <View style={styles.content}>
+        {/* Sessão de solicitações de cancelamento */}
+        {osCancelamento.length > 0 && (
+          <View style={styles.cancelSection}>
+            <Text style={styles.cancelSectionTitle}>Solicitações de Cancelamento</Text>
+            {osCancelamento.map(renderCancelamentoCard)}
+          </View>
+        )}
         <FlatList
-          data={filteredMechanics}
-          renderItem={renderMechanicCard}
+          data={filteredOS}
+          renderItem={renderOSCard}
           keyExtractor={item => item.uid}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
@@ -215,10 +215,9 @@ export default function ManageMechanicsScreen() {
           ListEmptyComponent={renderEmptyState}
         />
       </View>
-
       <TouchableOpacity
         style={styles.fab}
-        onPress={handleAddMechanic}
+        onPress={handleAddOS}
       >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
@@ -278,7 +277,7 @@ const styles = StyleSheet.create({
     padding: 20,
     flexGrow: 1,
   },
-  mechanicCard: {
+  osCard: {
     backgroundColor: COLORS.backgroundCard,
     borderRadius: 12,
     padding: 16,
@@ -295,39 +294,21 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 12,
   },
-  mechanicInfo: {
-    flex: 1,
-  },
-  mechanicName: {
+  osDescricao: {
     fontSize: 18,
     fontWeight: 'bold',
     color: COLORS.textPrimary,
     marginBottom: 4,
   },
-  mechanicSpecialty: {
+  osPreco: {
     fontSize: 14,
     color: COLORS.textSecondary,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  statusActive: {
-    backgroundColor: COLORS.success,
-  },
-  statusInactive: {
-    backgroundColor: COLORS.danger,
-  },
-  statusText: {
-    fontSize: 12,
     fontWeight: 'bold',
-    color: COLORS.textWhite,
   },
   cardBody: {
     marginBottom: 12,
   },
-  mechanicDetail: {
+  osDetail: {
     fontSize: 14,
     color: COLORS.textPrimary,
     marginBottom: 4,
@@ -349,9 +330,6 @@ const styles = StyleSheet.create({
   },
   editButton: {
     backgroundColor: COLORS.primary,
-  },
-  statusButton: {
-    backgroundColor: COLORS.warning,
   },
   deleteButton: {
     backgroundColor: COLORS.danger,
@@ -382,6 +360,18 @@ const styles = StyleSheet.create({
     color: COLORS.textWhite,
     fontWeight: 'bold',
   },
+  successContainer: {
+    backgroundColor: COLORS.success,
+    padding: 12,
+    borderRadius: 8,
+    margin: 20,
+    alignItems: 'center',
+  },
+  successText: {
+    color: COLORS.textWhite,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
   emptyState: {
     flex: 1,
     justifyContent: 'center',
@@ -402,6 +392,31 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.textSecondary,
     textAlign: 'center',
-    paddingHorizontal: 40,
+  },
+  cancelSection: {
+    backgroundColor: '#fff0f0',
+    borderRadius: 12,
+    padding: 12,
+    margin: 16,
+    marginBottom: 0,
+    borderWidth: 1,
+    borderColor: COLORS.danger,
+  },
+  cancelSectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: COLORS.danger,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  cancelCard: {
+    borderColor: COLORS.danger,
+    borderWidth: 2,
+    backgroundColor: '#fff5f5',
+  },
+  cancelStatus: {
+    fontWeight: 'bold',
+    marginTop: 8,
+    fontSize: 14,
   },
 }); 

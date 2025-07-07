@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
-  ScrollView,
   TextInput,
   Alert,
   FlatList,
@@ -13,35 +12,32 @@ import {
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { COLORS } from '../constants/colors';
-import { ICONS } from '../constants/icons';
-import { TEXTS } from '../constants/texts';
-import { mechanicService } from '../services/mechanicService';
+import { clientService } from '../services/clientService';
 
-export default function ManageMechanicsScreen() {
+export default function ManageClientsScreen() {
   const navigation = useNavigation();
-  const [mechanics, setMechanics] = useState([]);
+  const [clients, setClients] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const [filteredMechanics, setFilteredMechanics] = useState([]);
+  const [filteredClients, setFilteredClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
 
-  // Carrega os mecânicos quando a tela é focada
   useFocusEffect(
     React.useCallback(() => {
-      loadMechanics();
+      loadClients();
     }, [])
   );
 
   useEffect(() => {
-    filterMechanics();
-  }, [searchText, mechanics]);
+    filterClients();
+  }, [searchText, clients]);
 
-  const loadMechanics = async () => {
+  const loadClients = async () => {
     try {
       setLoading(true);
-      const mechanicsData = await mechanicService.getAllMechanics();
-      setMechanics(mechanicsData);
+      const clientsData = await clientService.getAllClients();
+      setClients(clientsData);
     } catch (error) {
       Alert.alert('Erro', error.message);
     } finally {
@@ -51,37 +47,37 @@ export default function ManageMechanicsScreen() {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await loadMechanics();
+    await loadClients();
     setRefreshing(false);
   };
 
-  const filterMechanics = () => {
+  const filterClients = () => {
     if (searchText.trim() === '') {
-      setFilteredMechanics(mechanics);
+      setFilteredClients(clients);
     } else {
-      const filtered = mechanics.filter(mechanic =>
-        mechanic.nome.toLowerCase().includes(searchText.toLowerCase()) ||
-        mechanic.especialidade.toLowerCase().includes(searchText.toLowerCase()) ||
-        mechanic.cpf.includes(searchText)
+      const filtered = clients.filter(client =>
+        client.nome.toLowerCase().includes(searchText.toLowerCase()) ||
+        client.cpf.includes(searchText) ||
+        (client.email && client.email.toLowerCase().includes(searchText.toLowerCase()))
       );
-      setFilteredMechanics(filtered);
+      setFilteredClients(filtered);
     }
   };
 
-  const handleAddMechanic = () => {
-    navigation.navigate('AddMechanic');
+  const handleAddClient = () => {
+    navigation.navigate('AddClient');
   };
 
-  const handleEditMechanic = (mechanic) => {
-    navigation.navigate('EditMechanic', { mechanic });
+  const handleEditClient = (client) => {
+    navigation.navigate('EditClient', { client });
   };
 
-  const handleDeleteMechanic = async (mechanic) => {
-    setDeletingId(mechanic.uid);
+  const handleDeleteClient = async (client) => {
+    setDeletingId(client.uid);
     try {
-      await mechanicService.deleteMechanic(mechanic.uid);
-      await loadMechanics();
-      Alert.alert('Sucesso', 'Mecânico excluído com sucesso!');
+      await clientService.deleteClient(client.uid);
+      await loadClients();
+      Alert.alert('Sucesso', 'Cliente excluído com sucesso!');
     } catch (error) {
       Alert.alert('Erro', error.message);
     } finally {
@@ -89,68 +85,26 @@ export default function ManageMechanicsScreen() {
     }
   };
 
-  const toggleStatus = async (mechanic) => {
-    try {
-      const newStatus = mechanic.status === 'ativo' ? 'inativo' : 'ativo';
-      await mechanicService.updateMechanicStatus(mechanic.uid, newStatus);
-      await loadMechanics(); // Recarrega a lista
-    } catch (error) {
-      Alert.alert('Erro', error.message);
-    }
-  };
-
-  const renderMechanicCard = ({ item }) => (
-    <View style={styles.mechanicCard}>
+  const renderClientCard = ({ item }) => (
+    <View style={styles.clientCard}>
       <View style={styles.cardHeader}>
-        <View style={styles.mechanicInfo}>
-          <Text style={styles.mechanicName}>{item.nome}</Text>
-          <Text style={styles.mechanicSpecialty}>{item.especialidade}</Text>
-        </View>
-        <View style={[styles.statusBadge, 
-          item.status === 'ativo' ? styles.statusActive : styles.statusInactive]}>
-          <Text style={styles.statusText}>
-            {item.status === 'ativo' ? 'Ativo' : 'Inativo'}
-          </Text>
-        </View>
+        <Text style={styles.clientName}>{item.nome}</Text>
       </View>
-
       <View style={styles.cardBody}>
-        <Text style={styles.mechanicDetail}>
-          <Text style={styles.label}>CPF:</Text> {item.cpf}
-        </Text>
-        <Text style={styles.mechanicDetail}>
-          <Text style={styles.label}>Email:</Text> {item.email}
-        </Text>
-        <Text style={styles.mechanicDetail}>
-          <Text style={styles.label}>Telefone:</Text> {item.telefone}
-        </Text>
-        {item.matricula && (
-          <Text style={styles.mechanicDetail}>
-            <Text style={styles.label}>Matrícula:</Text> {item.matricula}
-          </Text>
-        )}
+        <Text style={styles.clientDetail}><Text style={styles.label}>CPF:</Text> {item.cpf}</Text>
+        <Text style={styles.clientDetail}><Text style={styles.label}>Email:</Text> {item.email}</Text>
+        <Text style={styles.clientDetail}><Text style={styles.label}>Telefone:</Text> {item.telefone}</Text>
       </View>
-
       <View style={styles.cardActions}>
         <TouchableOpacity
           style={[styles.actionButton, styles.editButton]}
-          onPress={() => handleEditMechanic(item)}
+          onPress={() => handleEditClient(item)}
         >
           <Text style={styles.actionButtonText}>✏️ Editar</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.actionButton, styles.statusButton]}
-          onPress={() => toggleStatus(item)}
-        >
-          <Text style={styles.actionButtonText}>
-            {item.status === 'ativo' ? '⏸️ Pausar' : '▶️ Ativar'}
-          </Text>
-        </TouchableOpacity>
-
         <TouchableOpacity
           style={[styles.actionButton, styles.deleteButton]}
-          onPress={() => handleDeleteMechanic(item)}
+          onPress={() => handleDeleteClient(item)}
           disabled={deletingId === item.uid}
         >
           <Text style={styles.actionButtonText}>
@@ -163,13 +117,12 @@ export default function ManageMechanicsScreen() {
 
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
-      <Text style={styles.emptyStateIcon}>🔧</Text>
-      <Text style={styles.emptyStateTitle}>Nenhum mecânico encontrado</Text>
+      <Text style={styles.emptyStateIcon}>👤</Text>
+      <Text style={styles.emptyStateTitle}>Nenhum cliente encontrado</Text>
       <Text style={styles.emptyStateText}>
-        {searchText.trim() !== '' 
+        {searchText.trim() !== ''
           ? 'Tente ajustar sua busca'
-          : 'Adicione o primeiro mecânico clicando no botão +'
-        }
+          : 'Adicione o primeiro cliente clicando no botão +'}
       </Text>
     </View>
   );
@@ -181,27 +134,25 @@ export default function ManageMechanicsScreen() {
           <Text style={styles.backButtonText}>← Voltar</Text>
         </TouchableOpacity>
         <View style={{ flex: 1, alignItems: 'center' }}>
-          <Text style={styles.title}>Gerenciar Mecânicos</Text>
+          <Text style={styles.title}>Gerenciar Clientes</Text>
           <Text style={styles.subtitle}>
-            {filteredMechanics.length} mecânico(s) encontrado(s)
+            {filteredClients.length} cliente(s) encontrado(s)
           </Text>
         </View>
         <View style={{ width: 60 }} />
       </View>
-
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
-          placeholder="Buscar por nome, especialidade ou CPF..."
+          placeholder="Buscar por nome, CPF ou email..."
           value={searchText}
           onChangeText={setSearchText}
         />
       </View>
-
       <View style={styles.content}>
         <FlatList
-          data={filteredMechanics}
-          renderItem={renderMechanicCard}
+          data={filteredClients}
+          renderItem={renderClientCard}
           keyExtractor={item => item.uid}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
@@ -215,10 +166,9 @@ export default function ManageMechanicsScreen() {
           ListEmptyComponent={renderEmptyState}
         />
       </View>
-
       <TouchableOpacity
         style={styles.fab}
-        onPress={handleAddMechanic}
+        onPress={handleAddClient}
       >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
@@ -278,7 +228,7 @@ const styles = StyleSheet.create({
     padding: 20,
     flexGrow: 1,
   },
-  mechanicCard: {
+  clientCard: {
     backgroundColor: COLORS.backgroundCard,
     borderRadius: 12,
     padding: 16,
@@ -295,39 +245,16 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 12,
   },
-  mechanicInfo: {
-    flex: 1,
-  },
-  mechanicName: {
+  clientName: {
     fontSize: 18,
     fontWeight: 'bold',
     color: COLORS.textPrimary,
     marginBottom: 4,
   },
-  mechanicSpecialty: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  statusActive: {
-    backgroundColor: COLORS.success,
-  },
-  statusInactive: {
-    backgroundColor: COLORS.danger,
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: COLORS.textWhite,
-  },
   cardBody: {
     marginBottom: 12,
   },
-  mechanicDetail: {
+  clientDetail: {
     fontSize: 14,
     color: COLORS.textPrimary,
     marginBottom: 4,
@@ -349,9 +276,6 @@ const styles = StyleSheet.create({
   },
   editButton: {
     backgroundColor: COLORS.primary,
-  },
-  statusButton: {
-    backgroundColor: COLORS.warning,
   },
   deleteButton: {
     backgroundColor: COLORS.danger,
@@ -402,6 +326,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.textSecondary,
     textAlign: 'center',
-    paddingHorizontal: 40,
   },
 }); 

@@ -1,8 +1,10 @@
 {
   "rules": {
+    ".read": true,
+    ".write": true,
     "usuarios": {
-      ".read": "auth.token.isAdmin == true || root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN'",
-      ".write": "auth.token.isAdmin == true",
+      ".read": "auth != null",
+      ".write": "auth != null",
       ".indexOn": [
         "email"
       ],
@@ -12,17 +14,30 @@
         ".write": "$uid === auth.uid && (newData.child('funcao').val() == 'CLIENTE' || newData.child('funcao').val() == 'MECANICO')"
       }
     },
+    "admins": {
+      ".indexOn": [
+        "cpf",
+        "email"
+      ],
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$uid": {
+        ".validate": "newData.hasChildren(['cpf','email','nome'])",
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
     "clientes": {
       ".indexOn": [
         "cpf",
-        "nome"
+        "email"
       ],
-      ".read": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN' || root.child('usuarios').child(auth.uid).child('funcao').val() === 'MECANICO'",
-      ".write": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN'",
+      ".read": "auth != null",
+      ".write": "auth != null",
       "$uid": {
         ".validate": "newData.hasChildren(['cpf','telefone','nome'])",
-        ".read": "$uid === auth.uid || root.child('usuarios').child(auth.uid).child('funcao').val() === 'MECANICO'",
-        ".write": "$uid === auth.uid && root.child('usuarios').child(auth.uid).child('funcao').val() === 'CLIENTE'"
+        ".read": "auth != null",
+        ".write": "auth != null"
       }
     },
     "mecanicos": {
@@ -34,12 +49,12 @@
         "status",
         "especialidade"
       ],
-      ".read": "root.child('usuarios').child(auth.uid).exists()",
-      ".write": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN'",
+      ".read": "auth != null",
+      ".write": "auth != null",
       "$uid": {
-        ".validate": "newData.hasChildren(['matricula','nome','cpf','email','telefone','especialidade','status'])",
-        ".read": "$uid === auth.uid || root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN'",
-        ".write": "$uid === auth.uid && root.child('usuarios').child(auth.uid).child('funcao').val() === 'MECANICO' || root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN'"
+        ".validate": "newData.hasChildren(['matricula','nome'])",
+        ".read": "auth != null",
+        ".write": "auth != null"
       }
     },
     "veiculos": {
@@ -48,12 +63,12 @@
         "modelo",
         "marca"
       ],
-      ".read": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN' || root.child('usuarios').child(auth.uid).child('funcao').val() === 'MECANICO'",
-      ".write": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN'",
+      ".read": "auth != null",
+      ".write": "auth != null",
       "$placa": {
         ".validate": "newData.hasChildren(['placa','modelo','marca','idCliente']) && newData.child('placa').val() === $placa",
-        ".read": "root.child('clientes').child(auth.uid).exists() && data.child('idCliente').val() === auth.uid",
-        ".write": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'CLIENTE' && newData.child('idCliente').val() === auth.uid"
+        ".read": "auth != null",
+        ".write": "auth != null"
       }
     },
     "oss": {
@@ -63,12 +78,12 @@
         "idVeiculo",
         "idMecanico"
       ],
-      ".read": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN'",
-      ".write": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN' || newData.exists()",
+      ".read": "auth != null",
+      ".write": "auth != null",
       "$osId": {
-        ".validate": "newData.hasChildren(['preco','dataInicio','descricao','idVeiculo','idMecanico'])",
-        ".read": "(root.child('usuarios').child(auth.uid).child('funcao').val() === 'MECANICO' && data.child('idMecanico').val() === auth.uid) || (root.child('usuarios').child(auth.uid).child('funcao').val() === 'CLIENTE' && root.child('veiculos').child(data.child('idVeiculo').val()).child('idCliente').val() === auth.uid)",
-        ".write": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'MECANICO' && newData.child('idMecanico').val() === auth.uid",
+        ".validate": "newData.hasChildren(['preco','dataInicio','dataFim','descricao'])",
+        ".read": "auth != null",
+        ".write": "auth != null",
         "itens": {
           "$itemId": {
             ".validate": "newData.hasChildren(['precoProd','quantidade','precoPraticado','idProduto'])"
@@ -82,9 +97,25 @@
         "nome"
       ],
       ".read": "auth != null",
-      ".write": "root.child('usuarios').child(auth.uid).child('funcao').val() === 'ADMIN'",
-      "$codigo": {
-        ".validate": "newData.hasChildren(['codigo','quantidade','nome','precoAtual']) && newData.child('codigo').val() === $codigo"
+      ".write": "auth != null",
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        ".validate": "newData.hasChildren(['codigo','nome','quantidade','precoAtual'])"
+      }
+    },
+    "preos": {
+      ".indexOn": [
+        "idCliente",
+        "status",
+        "createdAt"
+      ],
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$uid": {
+        ".validate": "newData.hasChildren(['idCliente','idVeiculo','descricao','status'])",
+        ".read": "auth != null",
+        ".write": "auth != null"
       }
     }
   }

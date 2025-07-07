@@ -137,6 +137,7 @@ export default function EditMechanicScreen() {
   };
 
   const handleDelete = () => {
+    console.log('handleDelete - Iniciando exclusão do mecânico:', mechanic.uid);
     Alert.alert(
       'Confirmar Exclusão',
       `Tem certeza que deseja excluir o mecânico ${mechanic.nome}?\n\nEsta ação não pode ser desfeita.`,
@@ -148,7 +149,9 @@ export default function EditMechanicScreen() {
           onPress: async () => {
             try {
               setLoading(true);
+              console.log('handleDelete - Chamando mechanicService.deleteMechanic:', mechanic.uid);
               await mechanicService.deleteMechanic(mechanic.uid);
+              console.log('handleDelete - Exclusão concluída');
               Alert.alert(
                 'Sucesso', 
                 'Mecânico excluído com sucesso!',
@@ -160,6 +163,7 @@ export default function EditMechanicScreen() {
                 ]
               );
             } catch (error) {
+              console.error('handleDelete - Erro ao excluir:', error);
               Alert.alert('Erro', error.message);
             } finally {
               setLoading(false);
@@ -283,7 +287,19 @@ export default function EditMechanicScreen() {
           <View style={styles.buttonGroup}>
             <TouchableOpacity
               style={[styles.button, styles.deleteButton]}
-              onPress={handleDelete}
+              onPress={async () => {
+                setLoading(true);
+                try {
+                  await mechanicService.deleteMechanic(mechanic.uid);
+                  Alert.alert('Sucesso', 'Mecânico excluído com sucesso!', [
+                    { text: 'OK', onPress: () => navigation.goBack() }
+                  ]);
+                } catch (error) {
+                  Alert.alert('Erro', error.message);
+                } finally {
+                  setLoading(false);
+                }
+              }}
               disabled={loading}
             >
               <Text style={styles.deleteButtonText}>🗑️ Excluir</Text>

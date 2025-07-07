@@ -1,209 +1,364 @@
-# Oficina App - Sistema de Gerenciamento de Serviços (Mobile)
+# 🔧 Oficina App - Sistema de Gerenciamento Completo
 
-Este é um aplicativo móvel desenvolvido em **React Native** (Expo) para gerenciamento de serviços de oficina mecânica, com integração completa ao **Firebase**.
+Aplicativo React Native para gerenciamento completo de oficina mecânica com integração Firebase Realtime Database.
 
-## 🚀 Funcionalidades Implementadas
+## 🚀 **FUNCIONALIDADES IMPLEMENTADAS**
 
-### ✅ Gerenciamento de Mecânicos
-- **Listagem de Mecânicos**: Visualização completa com busca e filtros
-- **Cadastro de Mecânicos**: Formulário completo com validações
-- **Edição de Mecânicos**: Modificação de dados existentes
-- **Exclusão de Mecânicos**: Remoção segura com confirmação
-- **Ativação/Desativação**: Controle de status dos mecânicos
-- **Validações**: CPF e email únicos, campos obrigatórios
+### **👤 Sistema de Autenticação e Perfis**
+- ✅ Login com email/senha via Firebase Auth
+- ✅ Sistema de perfis: Admin, Cliente, Mecânico
+- ✅ Contexto global de usuário
+- ✅ Navegação baseada em função
+- ✅ Logout padronizado em todas as áreas
 
-### 🔄 Integração Firebase
-- **Firestore Database**: Armazenamento em tempo real
-- **Regras de Segurança**: Validações e permissões configuradas
-- **Sincronização**: Dados sempre atualizados
-- **Offline Support**: Funcionalidade básica offline
+### **👨‍💼 Área do Administrador**
+- ✅ **Gerenciamento de Clientes**
+  - Listar, adicionar, editar e excluir clientes
+  - Validações de CPF, email e telefone únicos
+  - Feedback padronizado após operações
+- ✅ **Gerenciamento de Mecânicos**
+  - Listar, adicionar, editar e excluir mecânicos
+  - Controle de status (ativo/inativo)
+  - Validações de especialidade e matrícula
+- ✅ **Gerenciamento de Produtos**
+  - Cadastro de produtos/serviços
+  - Controle de preços e estoque
+  - Categorização de produtos
+- ✅ **Gerenciamento de Ordens de Serviço (OS)**
+  - Criação e edição de OS
+  - Alocação de mecânicos
+  - Controle de status (pendente, em andamento, concluída)
+  - Histórico completo de OS
+- ✅ **Solicitações de Serviço**
+  - Visualização de solicitações de clientes
+  - Aprovação/rejeição de solicitações
+  - Conversão de solicitação em OS
+  - Edição de solicitações antes da aprovação
 
-## 📋 Pré-requisitos
+### **👨‍🔧 Área do Mecânico**
+- ✅ **Minhas OS**
+  - Visualização de OS alocadas
+  - Atualização de status de OS
+  - Histórico de trabalhos realizados
+- ✅ **Consulta de Produtos**
+  - Busca de produtos disponíveis
+  - Visualização de preços e estoque
+  - Filtros por categoria
 
+### **🚗 Área do Cliente**
+- ✅ **Meus Veículos**
+  - Cadastro e gerenciamento de veículos
+  - Histórico de veículos
+  - Informações detalhadas (marca, modelo, ano, placa)
+- ✅ **Minhas OS**
+  - Visualização de OS do cliente
+  - Acompanhamento de status
+  - Solicitação de cancelamento de OS
+  - Histórico completo
+- ✅ **Contratar Serviço**
+  - Criação de solicitação de serviço
+  - Seleção de veículo
+  - Descrição detalhada do problema
+  - Acompanhamento de status da solicitação
+
+### **🔄 Fluxo de Solicitações**
+- ✅ Cliente cria solicitação de serviço
+- ✅ Admin visualiza e pode aprovar/rejeitar
+- ✅ Admin pode editar solicitação antes de aprovar
+- ✅ Aprovação converte solicitação em OS real
+- ✅ Mecânico é alocado automaticamente
+- ✅ Cliente acompanha status em tempo real
+
+## 🛠️ **TECNOLOGIAS UTILIZADAS**
+
+- **React Native** - Framework mobile
+- **Expo** - Plataforma de desenvolvimento
+- **Firebase** - Backend e autenticação
+  - Firebase Auth (autenticação)
+  - Realtime Database (dados em tempo real)
+- **React Navigation** - Navegação entre telas
+- **AsyncStorage** - Armazenamento local
+
+## 📱 **ESTRUTURA DO PROJETO**
+
+```
+src/
+├── components/          # Componentes reutilizáveis
+│   ├── ActionCard.js
+│   ├── DateInput.js
+│   ├── Header.js
+│   └── StatusCard.js
+├── config/             # Configurações
+│   ├── environment.js
+│   └── firebase.js
+├── constants/          # Constantes do app
+│   ├── colors.js
+│   ├── icons.js
+│   └── texts.js
+├── context/           # Contexto global
+│   └── UserContext.js
+├── Model/             # Modelos de dados
+│   ├── Cliente.js
+│   ├── Mecanico.js
+│   ├── OS.js
+│   ├── Produto.js
+│   ├── Veiculo.js
+│   ├── dao/
+│   └── DTO/
+├── screens/           # Telas do app
+│   ├── LoginScreen.js
+│   ├── HomeScreen.js
+│   ├── AdminScreen.js
+│   ├── ClientScreen.js
+│   ├── MechanicScreen.js
+│   ├── AddClientScreen.js
+│   ├── EditClientScreen.js
+│   ├── ManageClientsScreen.js
+│   ├── AddMechanicScreen.js
+│   ├── EditMechanicScreen.js
+│   ├── ManageMechanicsScreen.js
+│   ├── AddProductScreen.js
+│   ├── EditProductScreen.js
+│   ├── ManageProductsScreen.js
+│   ├── AddOSScreen.js
+│   ├── EditOSScreen.js
+│   ├── ManageOSScreen.js
+│   └── ManageRequestsScreen.js
+├── services/          # Serviços de API
+│   ├── adminService.js
+│   ├── clientService.js
+│   ├── firebaseService.js
+│   ├── mechanicService.js
+│   ├── osService.js
+│   ├── productService.js
+│   └── userProfileService.js
+└── utils/            # Utilitários
+    ├── firebaseTest.js
+    └── validation.js
+```
+
+## 🚀 **COMO USAR**
+
+### **1. Pré-requisitos**
 - Node.js (versão 14 ou superior)
 - npm ou yarn
-- Expo CLI
-- Android Studio (para desenvolvimento Android)
-- Xcode (para desenvolvimento iOS, apenas em macOS)
-- Conta no Firebase Console
+- Expo CLI (`npm install -g expo-cli`)
 
-## 🔧 Configuração do Firebase
-
-**IMPORTANTE**: Antes de executar o app, configure o Firebase:
-
-1. Siga o guia completo em [FIREBASE_SETUP.md](./FIREBASE_SETUP.md)
-2. Configure as credenciais no arquivo `src/config/firebase.js`
-3. Publique as regras de segurança do arquivo `firestore.rules`
-
-## 📦 Instalação
-
-1. Clone o repositório:
+### **2. Instalação**
 ```bash
+# Clone o repositório
 git clone [URL_DO_REPOSITORIO]
 cd Oficina-ReactNative
-```
 
-2. Instale as dependências:
-```bash
+# Instale as dependências
 npm install
-# ou
-yarn install
 ```
 
-3. Configure o Firebase (veja FIREBASE_SETUP.md)
+### **3. Configuração do Firebase**
 
-4. Inicie o projeto:
+#### **3.1 Criar Projeto Firebase**
+1. Acesse [Console do Firebase](https://console.firebase.google.com)
+2. Crie um novo projeto
+3. Ative o **Authentication** (Email/Password)
+4. Ative o **Realtime Database**
+
+#### **3.2 Configurar Credenciais**
+1. Vá em **Configurações do Projeto** > **Configurações do SDK**
+2. Copie as credenciais para `src/config/environment.js`:
+
+```javascript
+export const FIREBASE_CONFIG = {
+  apiKey: "sua-api-key",
+  authDomain: "seu-projeto.firebaseapp.com",
+  databaseURL: "https://seu-projeto-default-rtdb.firebaseio.com",
+  projectId: "seu-projeto",
+  storageBucket: "seu-projeto.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abcdef"
+};
+```
+
+#### **3.3 Configurar Regras do Realtime Database**
+```json
+{
+  "rules": {
+    "admins": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "clientes": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "mecanicos": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "produtos": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "ordensServico": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "preos": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "veiculos": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "usuarios": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid"
+      }
+    }
+  }
+}
+```
+
+### **4. Executar o App**
 ```bash
+# Iniciar o servidor de desenvolvimento
 npm start
-# ou
-yarn start
+
+# Ou usar comandos específicos
+npm run android  # Para Android
+npm run ios      # Para iOS
+npm run web      # Para Web
 ```
 
-## 🎯 Executando o Aplicativo
-
-1. Após iniciar o projeto, você verá um QR Code no terminal
-2. Para Android:
-   - Instale o aplicativo Expo Go na Play Store
-   - Escaneie o QR Code com o aplicativo
-3. Para iOS:
-   - Instale o aplicativo Expo Go na App Store
-   - Escaneie o QR Code com a câmera do iPhone
-
-## 📁 Estrutura do Projeto
-
-```
-Oficina-ReactNative/
-├── App.js                          # Componente principal
-├── package.json                    # Dependências
-├── README.md                       # Este arquivo
-├── FIREBASE_SETUP.md              # Guia de configuração Firebase
-├── firestore.rules                # Regras de segurança Firestore
-├── src/
-│   ├── components/                # Componentes reutilizáveis
-│   │   ├── ActionCard.js
-│   │   ├── Header.js
-│   │   └── StatusCard.js
-│   ├── constants/                 # Constantes do app
-│   │   ├── colors.js
-│   │   ├── icons.js
-│   │   └── texts.js
-│   ├── screens/                   # Telas do app
-│   │   ├── AdminScreen.js         # Tela principal do admin
-│   │   ├── ManageMechanicsScreen.js # Gerenciar mecânicos
-│   │   ├── AddMechanicScreen.js   # Adicionar mecânico
-│   │   ├── EditMechanicScreen.js  # Editar mecânico
-│   │   ├── HomeScreen.js          # Tela inicial
-│   │   ├── LoginScreen.js         # Tela de login
-│   │   ├── ClientScreen.js        # Área do cliente
-│   │   └── MechanicScreen.js      # Área do mecânico
-│   ├── services/                  # Serviços externos
-│   │   ├── firebaseService.js     # Serviços Firebase gerais
-│   │   └── mechanicService.js     # Serviços específicos mecânicos
-│   ├── config/                    # Configurações
-│   │   └── firebase.js           # Configuração Firebase
-│   └── Model/                     # Modelos de dados
-│       ├── Cliente.js
-│       ├── Mecanico.js
-│       ├── OS.js
-│       ├── Veiculo.js
-│       └── dao/                   # Data Access Objects
-├── Assets/                        # Recursos estáticos
-└── icons/                         # Ícones do app
+### **5. Testar a Conexão Firebase**
+```bash
+# Testar se o Firebase está configurado corretamente
+node test-firebase.js
 ```
 
-## 🛠️ Funcionalidades Detalhadas
+## 👥 **PERFIS DE USUÁRIO**
 
-### Gerenciamento de Mecânicos
+### **🔧 Administrador**
+- Acesso completo ao sistema
+- Gerenciamento de clientes, mecânicos, produtos
+- Criação e gerenciamento de OS
+- Aprovação de solicitações de serviço
+- Visualização de relatórios
 
-#### 📋 Listagem (`ManageMechanicsScreen`)
-- Lista todos os mecânicos cadastrados
-- Busca por nome, especialidade ou CPF
-- Filtros por status (ativo/inativo)
-- Pull-to-refresh para atualizar dados
-- Estados vazios informativos
-- Ações rápidas: editar, ativar/desativar, excluir
+### **👨‍🔧 Mecânico**
+- Visualização de OS alocadas
+- Atualização de status de OS
+- Consulta de produtos disponíveis
+- Histórico de trabalhos realizados
 
-#### ➕ Cadastro (`AddMechanicScreen`)
-- Formulário completo com validações
-- Verificação de CPF e email únicos
-- Confirmação antes de sair sem salvar
-- Feedback visual durante operações
-- Campos obrigatórios marcados
+### **🚗 Cliente**
+- Gerenciamento de veículos
+- Visualização de OS próprias
+- Solicitação de cancelamento de OS
+- Criação de solicitações de serviço
+- Acompanhamento de status
 
-#### ✏️ Edição (`EditMechanicScreen`)
-- Dados pré-preenchidos do mecânico
-- Validações de unicidade (excluindo o registro atual)
-- Detecção de alterações não salvas
-- Opção de exclusão integrada
-- Confirmações de segurança
+## 🔧 **FUNCIONALIDADES ESPECÍFICAS**
 
-### 🔐 Segurança e Validações
+### **Sistema de Solicitações**
+- Cliente cria solicitação de serviço
+- Admin visualiza e pode aprovar/rejeitar
+- Conversão automática em OS após aprovação
+- Alocação automática de mecânico
 
-- **Regras Firestore**: Validações no servidor
-- **CPF Único**: Verificação de duplicatas
-- **Email Único**: Verificação de duplicatas
-- **Campos Obrigatórios**: Validação no cliente e servidor
-- **Confirmações**: Ações destrutivas protegidas
-- **Timestamps**: Rastreamento de criação/atualização
+### **Controle de Cancelamento**
+- Cliente pode solicitar cancelamento de OS
+- Admin visualiza solicitações de cancelamento
+- Sistema de confirmação antes do cancelamento
 
-## 🎨 Interface do Usuário
+### **Validações Implementadas**
+- CPF único por cliente
+- Email único por usuário
+- Matrícula única por mecânico
+- Validação de telefone
+- Campos obrigatórios
 
-- **Design Moderno**: Interface limpa e intuitiva
-- **Cores Consistentes**: Paleta de cores padronizada
-- **Feedback Visual**: Loading states e mensagens
-- **Responsivo**: Adaptação a diferentes tamanhos de tela
-- **Acessibilidade**: Contraste e tamanhos adequados
+## 🛡️ **SEGURANÇA**
 
-## 🔧 Tecnologias Utilizadas
+- ✅ Autenticação obrigatória via Firebase Auth
+- ✅ Validações de entrada em todos os formulários
+- ✅ Tratamento de erros centralizado
+- ✅ Logs de auditoria para operações críticas
+- ✅ Controle de acesso baseado em perfil
 
-- **React Native**: Framework mobile
-- **Expo**: Plataforma de desenvolvimento
-- **React Navigation**: Navegação entre telas
-- **Firebase**: Backend e banco de dados
-- **Firestore**: Banco de dados NoSQL
-- **AsyncStorage**: Armazenamento local
-- **JavaScript**: Linguagem principal
+## 🔍 **DIAGNÓSTICO DE PROBLEMAS**
 
-## 🚧 Próximas Funcionalidades
+### **Problemas Comuns**
 
-### 📅 Em Desenvolvimento
-- [ ] Sistema de Autenticação
-- [ ] Gerenciamento de Clientes
-- [ ] Gerenciamento de Veículos
-- [ ] Ordens de Serviço (OS)
-- [ ] Notificações Push
-- [ ] Relatórios e Estatísticas
+#### **Erro de Conexão Firebase**
+```bash
+# Teste a conexão
+node test-firebase.js
+```
 
-### 🔮 Futuras Implementações
-- [ ] Sincronização Offline Avançada
-- [ ] Upload de Imagens
-- [ ] Sistema de Pagamentos
-- [ ] Integração com APIs Externas
-- [ ] Analytics e Métricas
+#### **Botões não funcionam no Web**
+- Use `window.confirm()` em vez de `Alert` no ambiente web
+- Verifique console do navegador para erros
 
-## 🐛 Solução de Problemas
+#### **Problemas de Autenticação**
+- Verifique se o Firebase Auth está ativo
+- Confirme se as regras do Realtime Database estão corretas
+- Verifique se o usuário está logado
 
-### Problemas Comuns
+### **Logs de Debug**
+O app inclui logs detalhados para diagnóstico:
+- Operações CRUD com feedback
+- Validações de dados
+- Erros de autenticação
+- Problemas de conexão
 
-1. **Erro de Conexão Firebase**
-   - Verifique as credenciais em `src/config/firebase.js`
-   - Confirme se as regras estão publicadas
+## 📋 **PRÓXIMOS PASSOS**
 
-2. **App não carrega**
-   - Verifique se todas as dependências estão instaladas
-   - Limpe o cache: `expo start -c`
+### **Melhorias Planejadas**
+- [ ] Implementar notificações push
+- [ ] Adicionar relatórios e estatísticas
+- [ ] Implementar sistema de pagamentos
+- [ ] Adicionar upload de imagens
+- [ ] Implementar chat entre cliente e mecânico
+- [ ] Adicionar sistema de avaliações
+- [ ] Implementar backup automático
 
-3. **Erro de Permissões**
-   - Verifique as regras do Firestore
-   - Confirme se o projeto Firebase está ativo
+### **Refatorações**
+- [ ] Migrar para estrutura de features
+- [ ] Implementar testes automatizados
+- [ ] Adicionar TypeScript
+- [ ] Implementar cache local
+- [ ] Otimizar performance
 
-## 📞 Suporte
+## 🤝 **CONTRIBUIÇÃO**
 
-Para dúvidas ou problemas:
-1. Verifique a documentação do Firebase
-2. Consulte o arquivo `FIREBASE_SETUP.md`
+Para contribuir com o projeto:
+
+1. **Fork** o repositório
+2. Crie uma **branch** para sua feature (`git checkout -b feature/nova-funcionalidade`)
+3. **Commit** suas mudanças (`git commit -am 'Adiciona nova funcionalidade'`)
+4. **Push** para a branch (`git push origin feature/nova-funcionalidade`)
+5. Abra um **Pull Request**
+
+### **Padrões de Código**
+- Use nomes descritivos para variáveis e funções
+- Adicione comentários em português
+- Mantenha a estrutura de pastas organizada
+- Teste suas mudanças antes de submeter
+
+## 📄 **LICENÇA**
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## 📞 **SUPORTE**
+
+Se encontrar problemas ou tiver dúvidas:
+1. Verifique a seção de diagnóstico acima
+2. Consulte o arquivo `TROUBLESHOOTING.md`
 3. Abra uma issue no repositório
+4. Entre em contato com a equipe de desenvolvimento
 
 ---
 
-**Este projeto está em desenvolvimento ativo e focado 100% na experiência mobile com integração Firebase!** 🚀 
+**Desenvolvido com ❤️ para otimizar a gestão de oficinas mecânicas** 

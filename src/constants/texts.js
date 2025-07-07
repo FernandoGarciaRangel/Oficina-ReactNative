@@ -133,4 +133,37 @@ export const TEXTS = {
   footer: {
     copyright: '© 2025 Sistema de Gerenciamento de Serviços. Todos os direitos reservados.',
   },
+  
+  // Mensagens de confirmação
+  confirmations: {
+    deleteMechanic: 'Tem certeza que deseja excluir este mecânico?',
+    deleteClient: 'Tem certeza que deseja excluir este cliente?',
+    deleteProduct: 'Tem certeza que deseja excluir este produto?',
+    deleteOS: 'Tem certeza que deseja excluir esta OS?',
+    logout: 'Tem certeza que deseja sair?',
+  },
+  
+  // Mensagens de sucesso
+  success: {
+    mechanicAdded: 'Mecânico cadastrado com sucesso!',
+    mechanicUpdated: 'Mecânico atualizado com sucesso!',
+    mechanicDeleted: 'Mecânico excluído com sucesso!',
+    clientAdded: 'Cliente cadastrado com sucesso!',
+    clientUpdated: 'Cliente atualizado com sucesso!',
+    clientDeleted: 'Cliente excluído com sucesso!',
+    productAdded: 'Produto cadastrado com sucesso!',
+    productUpdated: 'Produto atualizado com sucesso!',
+    productDeleted: 'Produto excluído com sucesso!',
+    osAdded: 'OS cadastrada com sucesso!',
+    osUpdated: 'OS atualizada com sucesso!',
+    osDeleted: 'OS excluída com sucesso!',
+  },
+  
+  // Mensagens de erro
+  errors: {
+    networkError: 'Erro de conexão. Verifique sua internet.',
+    authError: 'Erro de autenticação. Faça login novamente.',
+    validationError: 'Dados inválidos. Verifique os campos.',
+    unknownError: 'Erro inesperado. Tente novamente.',
+  },
 }; 

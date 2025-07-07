@@ -136,6 +136,8 @@ async function addSampleMechanics() {
     console.log('\n📱 Agora você pode executar o app e ver os mecânicos na listagem:');
     console.log('   npm start');
 
+    throw new Error('TESTE DE ERRO - PARA DIAGNÓSTICO');
+
     return addedMechanics;
 
   } catch (error) {

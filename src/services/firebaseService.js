@@ -1,17 +1,18 @@
-import { auth, db } from '../config/firebase';
+import { auth, database } from '../config/firebase';
 import { 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword,
   signOut 
 } from 'firebase/auth';
 import { 
-  collection, 
-  addDoc, 
-  getDocs, 
-  doc, 
-  updateDoc, 
-  deleteDoc 
-} from 'firebase/firestore';
+  ref, 
+  push, 
+  get, 
+  set, 
+  update, 
+  remove,
+  serverTimestamp
+} from 'firebase/database';
 
 // Serviços de Autenticação
 export const authService = {
@@ -50,46 +51,67 @@ export const authService = {
   }
 };
 
-// Serviços do Firestore
-export const firestoreService = {
+// Serviços do Realtime Database
+export const databaseService = {
   // Adicionar documento
-  async addDocument(collectionName, data) {
+  async addDocument(path, data) {
     try {
-      const docRef = await addDoc(collection(db, collectionName), data);
-      return docRef;
+      const docRef = ref(database, path);
+      const newDocRef = push(docRef);
+      const dataWithTimestamp = {
+        ...data,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      };
+      await set(newDocRef, dataWithTimestamp);
+      return newDocRef.key;
     } catch (error) {
       throw error;
     }
   },
 
   // Buscar todos os documentos
-  async getDocuments(collectionName) {
+  async getDocuments(path) {
     try {
-      const querySnapshot = await getDocs(collection(db, collectionName));
-      return querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      const docRef = ref(database, path);
+      const snapshot = await get(docRef);
+      
+      if (snapshot.exists()) {
+        const documents = [];
+        snapshot.forEach((childSnapshot) => {
+          documents.push({
+            uid: childSnapshot.key,
+            ...childSnapshot.val()
+          });
+        });
+        return documents;
+      }
+      
+      return [];
     } catch (error) {
       throw error;
     }
   },
 
   // Atualizar documento
-  async updateDocument(collectionName, docId, data) {
+  async updateDocument(path, uid, data) {
     try {
-      const docRef = doc(db, collectionName, docId);
-      await updateDoc(docRef, data);
+      const docRef = ref(database, `${path}/${uid}`);
+      const updateData = {
+        ...data,
+        updatedAt: serverTimestamp()
+      };
+      await update(docRef, updateData);
     } catch (error) {
       throw error;
     }
   },
 
   // Deletar documento
-  async deleteDocument(collectionName, docId) {
+  async deleteDocument(path) {
     try {
-      const docRef = doc(db, collectionName, docId);
-      await deleteDoc(docRef);
+      const docRef = ref(database, path);
+      await remove(docRef);
     } catch (error) {
       throw error;
     }

@@ -1,4 +1,6 @@
-import ModelError from "/model/ModelError.js";
+"use strict";
+
+import ModelError from "./ModelError.js";
 
 class OS {
     constructor(preco, veiculo,descricao, data_inicio, data_fim) {

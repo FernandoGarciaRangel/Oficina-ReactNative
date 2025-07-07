@@ -1,7 +1,7 @@
 "use strict";
 
-import Cliente from "/model/Cliente.js";
-import ModelError from "/model/ModelError.js";
+import Cliente from "../Cliente.js";
+import ModelError from "../ModelError.js";
 
 export default class DaoCliente {
   #clientes;

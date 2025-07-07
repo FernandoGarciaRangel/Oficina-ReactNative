@@ -1,9 +1,19 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useUser } from '../context/UserContext';
 
 export default function MechanicScreen() {
   const navigation = useNavigation();
+  const { user, logout } = useUser();
+
+  // Verificar se usuário tem permissão de mecânico
+  React.useEffect(() => {
+    if (user && user.funcao !== 'mecanico') {
+      Alert.alert('Acesso Negado', 'Você não tem permissão para acessar esta área.');
+      navigation.goBack();
+    }
+  }, [user, navigation]);
 
   const handlePendingServices = () => {
     Alert.alert('Serviços Pendentes', 'Funcionalidade será implementada em breve');
@@ -20,14 +30,12 @@ export default function MechanicScreen() {
     // navigation.navigate('ServiceHistory');
   };
 
-  const handleProductConsultation = () => {
-    Alert.alert('Consulta de Produtos', 'Funcionalidade será implementada em breve');
-    // navigation.navigate('ProductConsultation');
+  const handleMyOS = () => {
+    navigation.navigate('MechanicOS');
   };
 
-  const handleReports = () => {
-    Alert.alert('Relatórios', 'Funcionalidade será implementada em breve');
-    // navigation.navigate('Reports');
+  const handleProductConsultation = () => {
+    navigation.navigate('MechanicProductConsultation');
   };
 
   const handleUpdateServiceStatus = () => {
@@ -35,39 +43,49 @@ export default function MechanicScreen() {
     // navigation.navigate('UpdateServiceStatus');
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+      Alert.alert('Erro', 'Erro ao fazer logout');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+    }
+  };
+
+  // Se não é mecânico, não renderizar
+  if (user?.funcao !== 'mecanico') {
+    return null;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.header}>
           <Text style={styles.title}>Área do Mecânico</Text>
           <Text style={styles.subtitle}>Gerencie seus serviços e atividades</Text>
+          {user && (
+            <View style={styles.userInfo}>
+              <Text style={styles.userEmail}>{user.email}</Text>
+              <Text style={styles.userRole}>Mecânico</Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.content}>
-          <TouchableOpacity style={styles.card} onPress={handlePendingServices}>
+          <TouchableOpacity style={styles.card} onPress={handleMyOS}>
             <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Serviços Pendentes</Text>
-              <Text style={styles.cardIcon}>⏳</Text>
+              <Text style={styles.cardTitle}>Minhas OS</Text>
+              <Text style={styles.cardIcon}>📋</Text>
             </View>
-            <Text style={styles.cardDescription}>Visualizar e iniciar novos serviços</Text>
-            <Text style={styles.cardStatus}>Disponível</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.card} onPress={handleInProgressServices}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Em Andamento</Text>
-              <Text style={styles.cardIcon}>🔧</Text>
-            </View>
-            <Text style={styles.cardDescription}>Gerenciar serviços em execução</Text>
-            <Text style={styles.cardStatus}>Disponível</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.card} onPress={handleUpdateServiceStatus}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Atualizar Status</Text>
-              <Text style={styles.cardIcon}>📝</Text>
-            </View>
-            <Text style={styles.cardDescription}>Atualizar progresso dos serviços</Text>
+            <Text style={styles.cardDescription}>Visualizar e alterar suas ordens de serviço</Text>
             <Text style={styles.cardStatus}>Disponível</Text>
           </TouchableOpacity>
 
@@ -79,32 +97,23 @@ export default function MechanicScreen() {
             <Text style={styles.cardDescription}>Verificar estoque e produtos disponíveis</Text>
             <Text style={styles.cardStatus}>Disponível</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity style={styles.card} onPress={handleServiceHistory}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Histórico</Text>
-              <Text style={styles.cardIcon}>📋</Text>
-            </View>
-            <Text style={styles.cardDescription}>Visualizar serviços concluídos</Text>
-            <Text style={styles.cardStatus}>Disponível</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.card} onPress={handleReports}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Relatórios</Text>
-              <Text style={styles.cardIcon}>📊</Text>
-            </View>
-            <Text style={styles.cardDescription}>Gerar relatórios de serviços</Text>
-            <Text style={styles.cardStatus}>Em desenvolvimento</Text>
-          </TouchableOpacity>
         </View>
 
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.backButtonText}>Voltar</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.backButtonText}>Voltar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.logoutButton}
+            onPress={handleLogout}
+          >
+            <Text style={styles.logoutButtonText}>Sair</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -180,5 +189,35 @@ const styles = StyleSheet.create({
     color: '#333',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  logoutButton: {
+    backgroundColor: '#ffc107',
+    padding: 15,
+    borderRadius: 8,
+    margin: 20,
+    alignItems: 'center',
+  },
+  logoutButtonText: {
+    color: '#333',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  userInfo: {
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  userEmail: {
+    fontSize: 14,
+    color: '#666',
+  },
+  userRole: {
+    fontSize: 12,
+    color: '#ffc107',
+    fontWeight: '600',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 }); 

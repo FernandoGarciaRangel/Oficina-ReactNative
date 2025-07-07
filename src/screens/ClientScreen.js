@@ -1,9 +1,19 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useUser } from '../context/UserContext';
 
 export default function ClientScreen() {
   const navigation = useNavigation();
+  const { user, logout } = useUser();
+
+  // Verificar se usuário tem permissão de cliente
+  React.useEffect(() => {
+    if (user && user.funcao !== 'cliente') {
+      Alert.alert('Acesso Negado', 'Você não tem permissão para acessar esta área.');
+      navigation.goBack();
+    }
+  }, [user, navigation]);
 
   const handleScheduleService = () => {
     Alert.alert('Agendar Serviço', 'Funcionalidade será implementada em breve');
@@ -21,8 +31,19 @@ export default function ClientScreen() {
   };
 
   const handleMyVehicles = () => {
-    Alert.alert('Meus Veículos', 'Funcionalidade será implementada em breve');
-    // navigation.navigate('MyVehicles');
+    navigation.navigate('ClientVehicles');
+  };
+
+  const handleMyOS = () => {
+    navigation.navigate('ClientOS');
+  };
+
+  const handlePreOS = () => {
+    navigation.navigate('ClientPreOS');
+  };
+
+  const handleMyRequests = () => {
+    navigation.navigate('ClientMyRequests');
   };
 
   const handleServiceStatus = () => {
@@ -35,51 +56,43 @@ export default function ClientScreen() {
     // navigation.navigate('ContactMechanic');
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+      Alert.alert('Erro', 'Erro ao fazer logout');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+    }
+  };
+
+  // Se não é cliente, não renderizar
+  if (user?.funcao !== 'cliente') {
+    return null;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.header}>
           <Text style={styles.title}>Área do Cliente</Text>
           <Text style={styles.subtitle}>Gerencie seus serviços e veículos</Text>
+          {user && (
+            <View style={styles.userInfo}>
+              <Text style={styles.userEmail}>{user.email}</Text>
+              <Text style={styles.userRole}>Cliente</Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.content}>
-          <TouchableOpacity style={styles.card} onPress={handleScheduleService}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Agendar Serviço</Text>
-              <Text style={styles.cardIcon}>📅</Text>
-            </View>
-            <Text style={styles.cardDescription}>Marcar um novo serviço na oficina</Text>
-            <Text style={styles.cardStatus}>Disponível</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.card} onPress={handleMyServices}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Meus Serviços</Text>
-              <Text style={styles.cardIcon}>🔧</Text>
-            </View>
-            <Text style={styles.cardDescription}>Acompanhar serviços em andamento</Text>
-            <Text style={styles.cardStatus}>Disponível</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.card} onPress={handleServiceStatus}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Status do Serviço</Text>
-              <Text style={styles.cardIcon}>📊</Text>
-            </View>
-            <Text style={styles.cardDescription}>Verificar progresso dos serviços</Text>
-            <Text style={styles.cardStatus}>Disponível</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.card} onPress={handleServiceHistory}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Histórico</Text>
-              <Text style={styles.cardIcon}>📋</Text>
-            </View>
-            <Text style={styles.cardDescription}>Visualizar histórico de serviços</Text>
-            <Text style={styles.cardStatus}>Disponível</Text>
-          </TouchableOpacity>
-
           <TouchableOpacity style={styles.card} onPress={handleMyVehicles}>
             <View style={styles.cardHeader}>
               <Text style={styles.cardTitle}>Meus Veículos</Text>
@@ -89,22 +102,49 @@ export default function ClientScreen() {
             <Text style={styles.cardStatus}>Disponível</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.card} onPress={handleContactMechanic}>
+          <TouchableOpacity style={styles.card} onPress={handleMyOS}>
             <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Contatar Mecânico</Text>
-              <Text style={styles.cardIcon}>💬</Text>
+              <Text style={styles.cardTitle}>Minhas OS</Text>
+              <Text style={styles.cardIcon}>📋</Text>
             </View>
-            <Text style={styles.cardDescription}>Comunicar com o mecânico responsável</Text>
-            <Text style={styles.cardStatus}>Em desenvolvimento</Text>
+            <Text style={styles.cardDescription}>Consultar e solicitar cancelamento de OS</Text>
+            <Text style={styles.cardStatus}>Disponível</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.card} onPress={handlePreOS}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>Contratar Serviço</Text>
+              <Text style={styles.cardIcon}>📝</Text>
+            </View>
+            <Text style={styles.cardDescription}>Solicitar um novo serviço (pré-OS)</Text>
+            <Text style={styles.cardStatus}>Disponível</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.card} onPress={handleMyRequests}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>Minhas Solicitações</Text>
+              <Text style={styles.cardIcon}>📋</Text>
+            </View>
+            <Text style={styles.cardDescription}>Acompanhar status das solicitações enviadas</Text>
+            <Text style={styles.cardStatus}>Disponível</Text>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.backButtonText}>Voltar</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.backButtonText}>Voltar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.logoutButton}
+            onPress={handleLogout}
+          >
+            <Text style={styles.logoutButtonText}>Sair</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -180,5 +220,38 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  logoutButton: {
+    backgroundColor: '#28a745',
+    padding: 15,
+    borderRadius: 8,
+    margin: 20,
+    alignItems: 'center',
+  },
+  logoutButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  userInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  userEmail: {
+    fontSize: 14,
+    color: '#e8f5e8',
+    marginRight: 10,
+  },
+  userRole: {
+    fontSize: 14,
+    color: '#e8f5e8',
+    fontWeight: 'bold',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    margin: 20,
   },
 }); 

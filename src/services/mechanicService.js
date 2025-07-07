@@ -116,6 +116,7 @@ export const mechanicService = {
   // Adicionar novo mecânico
   async addMechanic(mechanicData) {
     try {
+      console.log('mechanicService.addMechanic - Iniciando...');
       const mechanicsRef = ref(database, COLLECTION_NAME);
       const newMechanicRef = push(mechanicsRef);
       
@@ -126,15 +127,21 @@ export const mechanicService = {
         updatedAt: serverTimestamp()
       };
 
+      console.log('mechanicService.addMechanic - Dados para adicionar:', mechanicToAdd);
+      console.log('mechanicService.addMechanic - Referência:', newMechanicRef.toString());
+
       await set(newMechanicRef, mechanicToAdd);
       
-      return {
+      const result = {
         uid: newMechanicRef.key,
         ...mechanicToAdd
       };
+      
+      console.log('mechanicService.addMechanic - Sucesso:', result);
+      return result;
     } catch (error) {
-      console.error('Erro ao adicionar mecânico:', error);
-      throw new Error('Erro ao cadastrar mecânico');
+      console.error('mechanicService.addMechanic - Erro:', error);
+      throw new Error(`Erro ao cadastrar mecânico: ${error.message}`);
     }
   },
 
@@ -162,13 +169,15 @@ export const mechanicService = {
   // Deletar mecânico
   async deleteMechanic(uid) {
     try {
+      console.log('deleteMechanic - Iniciando exclusão do UID:', uid);
       const mechanicRef = ref(database, `${COLLECTION_NAME}/${uid}`);
+      console.log('deleteMechanic - Caminho do nó:', mechanicRef.toString());
       await remove(mechanicRef);
-      
+      console.log('deleteMechanic - Exclusão concluída com sucesso');
       return { success: true };
     } catch (error) {
-      console.error('Erro ao deletar mecânico:', error);
-      throw new Error('Erro ao excluir mecânico');
+      console.error('deleteMechanic - Erro ao deletar mecânico:', error);
+      throw new Error('Erro ao excluir mecânico: ' + error.message);
     }
   },
 
@@ -191,6 +200,7 @@ export const mechanicService = {
   // Verificar se CPF já existe
   async checkCpfExists(cpf, excludeUid = null) {
     try {
+      console.log('mechanicService.checkCpfExists - Verificando CPF:', cpf);
       const mechanicsRef = ref(database, COLLECTION_NAME);
       const cpfQuery = query(mechanicsRef, orderByChild('cpf'), equalTo(cpf));
       const snapshot = await get(cpfQuery);
@@ -198,12 +208,15 @@ export const mechanicService = {
       if (snapshot.exists()) {
         const existingMechanic = snapshot.val();
         const mechanicUid = Object.keys(existingMechanic)[0];
-        return mechanicUid !== excludeUid;
+        const exists = mechanicUid !== excludeUid;
+        console.log('mechanicService.checkCpfExists - CPF existe:', exists, 'UID:', mechanicUid);
+        return exists;
       }
       
+      console.log('mechanicService.checkCpfExists - CPF não existe');
       return false;
     } catch (error) {
-      console.error('Erro ao verificar CPF:', error);
+      console.error('mechanicService.checkCpfExists - Erro:', error);
       return false;
     }
   },
@@ -211,6 +224,7 @@ export const mechanicService = {
   // Verificar se email já existe
   async checkEmailExists(email, excludeUid = null) {
     try {
+      console.log('mechanicService.checkEmailExists - Verificando email:', email);
       const mechanicsRef = ref(database, COLLECTION_NAME);
       const emailQuery = query(mechanicsRef, orderByChild('email'), equalTo(email));
       const snapshot = await get(emailQuery);
@@ -218,12 +232,15 @@ export const mechanicService = {
       if (snapshot.exists()) {
         const existingMechanic = snapshot.val();
         const mechanicUid = Object.keys(existingMechanic)[0];
-        return mechanicUid !== excludeUid;
+        const exists = mechanicUid !== excludeUid;
+        console.log('mechanicService.checkEmailExists - Email existe:', exists, 'UID:', mechanicUid);
+        return exists;
       }
       
+      console.log('mechanicService.checkEmailExists - Email não existe');
       return false;
     } catch (error) {
-      console.error('Erro ao verificar email:', error);
+      console.error('mechanicService.checkEmailExists - Erro:', error);
       return false;
     }
   },
@@ -231,6 +248,7 @@ export const mechanicService = {
   // Verificar se matrícula já existe
   async checkMatriculaExists(matricula, excludeUid = null) {
     try {
+      console.log('mechanicService.checkMatriculaExists - Verificando matrícula:', matricula);
       const mechanicsRef = ref(database, COLLECTION_NAME);
       const matriculaQuery = query(mechanicsRef, orderByChild('matricula'), equalTo(matricula));
       const snapshot = await get(matriculaQuery);
@@ -238,12 +256,15 @@ export const mechanicService = {
       if (snapshot.exists()) {
         const existingMechanic = snapshot.val();
         const mechanicUid = Object.keys(existingMechanic)[0];
-        return mechanicUid !== excludeUid;
+        const exists = mechanicUid !== excludeUid;
+        console.log('mechanicService.checkMatriculaExists - Matrícula existe:', exists, 'UID:', mechanicUid);
+        return exists;
       }
       
+      console.log('mechanicService.checkMatriculaExists - Matrícula não existe');
       return false;
     } catch (error) {
-      console.error('Erro ao verificar matrícula:', error);
+      console.error('mechanicService.checkMatriculaExists - Erro:', error);
       return false;
     }
   }
